@@ -26,10 +26,11 @@ This will install all the packages listed in the `package.json` file.
 
 The project uses a `.env` file for environment variables. You'll need to create your own.
 
-1.  In the `verbose_train` directory, create a new file named `.env`.
-2.  Add the following content to the file:
+1. In the `verbose_train` directory, create a new file named `.env`.
+2. Add the following content to the file:
 
-```
+
+``` md
 # You can change the port if you want, but 3000 is the default.
 PORT=3000
 ```
@@ -50,18 +51,18 @@ You can now open your browser and navigate to `http://localhost:3000` to see the
 
 Remember to follow the Git workflow we have established.
 
-1.  **Update Your Local `main`:** Before starting new work, make sure your `main` branch is up to date.
-    *   `git checkout main`
-    *   `git pull origin main`
+1. **Update Your Local `main`:** Before starting new work, make sure your `main` branch is up to date.
+    * `git checkout main`
+    * `git pull origin main`
 
-2.  **Create a Feature Branch:** Create a new branch for your task.
-    *   `git checkout -b your-name/your-feature`
+2. **Create a Feature Branch:** Create a new branch for your task.
+    * `git checkout -b your-name/your-feature`
 
-3.  **Work and Commit:** Make your code changes and commit them with clear messages.
-    *   `git add .`
-    *   `git commit -m "Your descriptive commit message"`
+3. **Work and Commit:** Make your code changes and commit them with clear messages.
+    * `git add .`
+    * `git commit -m "Your descriptive commit message"`
 
-4.  **Push Your Branch:** Push your feature branch to GitHub.
-    *   `git push origin your-name/your-feature`
+4. **Push Your Branch:** Push your feature branch to GitHub.
+    * `git push origin your-name/your-feature`
 
-5.  **Open a Pull Request (PR):** Go to GitHub to open a PR to merge your branch into `main`. Request a review from a teammate.
+5. **Open a Pull Request (PR):** Go to GitHub to open a PR to merge your branch into `main`. Request a review from a teammate.
