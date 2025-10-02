@@ -17,6 +17,14 @@
             <span>👷</span>
         </div>
     </div>
-    <script src="../src/app.js"></script>
+    <div class="container" id="ai-container">
+        <h2>OpenAI Interaction</h2>
+        <textarea id="prompt-input" rows="4" cols="50" placeholder="Enter your prompt here..."></textarea>
+        <br>
+        <button id="submit-prompt">Get AI Response</button>
+        <div class="loader" id="loader"></div>
+        <div id="response-container"></div>
+    </div>
+    <script src="app.js"></script>
 </body>
 </html>
