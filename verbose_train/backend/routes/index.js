@@ -1,9 +1,17 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { getExampleData } = require('../controllers/exampleController');
+import { getExampleData } from '../controllers/exampleController.js';
+import { getOpenAIResponse } from '../controllers/openaicontroller.js';
+import { getStopPoints, getJourney } from '../controllers/tflController.js';
 
 // Define a sample route
 router.get('/hello', getExampleData);
 
-module.exports = router;
+// Route for OpenAI
+router.post('/openai', getOpenAIResponse);
 
+// Routes for TfL
+router.get('/tfl/stoppoints', getStopPoints);
+router.get('/tfl/journey', getJourney);
+
+export default router;

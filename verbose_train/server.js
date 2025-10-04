@@ -1,9 +1,27 @@
-require('dotenv').config();
-const express = require('express');
-const path = require('path');
+console.time('startup');
+
+console.time('require:dotenv');
+import 'dotenv/config';
+console.timeEnd('require:dotenv');
+
+console.time('require:express');
+import express from 'express';
+console.timeEnd('require:express');
+
+console.time('require:path');
+import path from 'path';
+console.timeEnd('require:path');
+
+import { fileURLToPath } from 'url';
 
 // Import your main router
-const apiRouter = require('./backend/routes/index');
+console.time('require:router');
+import apiRouter from './backend/routes/index.js';
+console.timeEnd('require:router');
+
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,7 +39,7 @@ app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 app.use('/api', apiRouter);
 
 // --- Start Server ---
+console.timeEnd('startup');
 app.listen(PORT, () => {
   console.log(`✅ Server is running at http://localhost:${PORT}`);
 });
-

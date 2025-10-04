@@ -1,4 +1,4 @@
-const exampleService = require('../services/exampleService');
+import exampleService from '../services/exampleService.js';
 
 const getExampleData = (req, res) => {
     try {
@@ -9,5 +9,5 @@ const getExampleData = (req, res) => {
     }
 };
 
-module.exports = { getExampleData };
+export { getExampleData };
 

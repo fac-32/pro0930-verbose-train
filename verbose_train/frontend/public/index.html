@@ -3,12 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>verbose_train</title>
+    <title>Verbose Train</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Welcome to verbose_train</h1>
-    <p>Your frontend is being served from the 'public' directory.</p>
-    <script src="../src/app.js"></script>
+    <div class="container">
+        <h1>🚂 Verbose Train 🚂</h1>
+        <p>All aboard! The Verbose Train is getting ready to depart.</p>
+        <p>This page is currently under construction. Please check back later for the full experience!</p>
+        <div class="construction">
+            <span>🚧</span>
+            <span>🛠️</span>
+            <span>👷</span>
+        </div>
+    </div>
+    <div class="container" id="ai-container">
+        <h2>OpenAI Interaction</h2>
+        <textarea id="prompt-input" rows="4" cols="50" placeholder="Enter your prompt here..."></textarea>
+        <br>
+        <button id="submit-prompt">Get AI Response</button>
+        <div class="loader" id="loader"></div>
+        <div id="response-container"></div>
+    </div>
+    <script src="app.js"></script>
 </body>
 </html>
