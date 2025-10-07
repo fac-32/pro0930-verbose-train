@@ -1,3 +1,4 @@
+console.log('Loading: services/tflService.js');
 import fetch from 'node-fetch';
 
 const TFL_API_URL = 'https://api.tfl.gov.uk';
@@ -15,7 +16,7 @@ const getJourney = async (from, to) => {
     let data = await response.json();
 
     // Check if the API returned a disambiguation result
-    if (data.$type.includes('DisambiguationResult')) {
+    if (data && data.$type && data.$type.includes('DisambiguationResult')) {
       // --- Handle 'from' location ambiguity ---
       let fromId = from;
       if (data.fromLocationDisambiguation && data.fromLocationDisambiguation.disambiguationOptions) {
