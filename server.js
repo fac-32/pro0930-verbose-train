@@ -34,6 +34,10 @@
   // This serves the static files from your frontend's public directory
   app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 
+  // Serve additional static assets (CSS/JS) from frontend/src under /assets
+  // This allows files in frontend/src (sibling to public) to be requested as /assets/...
+  app.use('/src', express.static(path.join(__dirname, 'frontend', 'src')));
+
   // --- API Routes ---
   // All backend routes will be prefixed with /api
   app.use('/api', apiRouter);
