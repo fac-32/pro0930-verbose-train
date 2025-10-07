@@ -48,6 +48,7 @@ This document outlines suggestions for improving the Verbose Train application, 
 ### 3.1. Improve User Feedback and State Management
 
 **Suggestion:** The UI could provide more feedback to the user while waiting for API responses.
+
 **Action:**
 
 - **Disable Buttons:** When the user clicks "Get Journey Summary", the button should be disabled to prevent multiple clicks.
@@ -61,7 +62,7 @@ This document outlines suggestions for improving the Verbose Train application, 
 
 ### 3.3. Sanitize HTML Output
 
-**Suggestion:** The response from the OpenAI API is inserted directly into the DOM using `innerHTML`. 
+**Suggestion:** The response from the OpenAI API is inserted directly into the DOM using `innerHTML`.
 **Reasoning:** While not a high risk now, this can be a security vulnerability (Cross-Site Scripting or XSS) if the API response were ever to contain malicious HTML. It's good practice to sanitize this. A simple fix is to insert the content as text instead of HTML.
 **Action:** Change `responseContainer.innerHTML = <p>${message}</p>;` to `responseContainer.textContent = message;` (and then style the container to look like a `<p>` tag if needed).
 
