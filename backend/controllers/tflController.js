@@ -14,6 +14,7 @@ const getStopPoints = async (req, res) => {
   }
 };
 
+
 const getJourney = async (req, res) => {
   try {
     const { from, to } = req.query;
