@@ -11,6 +11,10 @@ body {
     margin: 0;
 }
 
+.display-box {
+    display: none; /* Hidden by default */
+}
+
 .container {
     text-align: center;
     background-color: #ffffff;
