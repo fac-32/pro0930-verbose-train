@@ -1,5 +1,5 @@
 
-import tflService from '../services/tflService.js';
+import * as tflService from '../services/tflService.js';
 
 const getStopPoints = async (req, res) => {
   try {
@@ -14,18 +14,20 @@ const getStopPoints = async (req, res) => {
   }
 };
 
+const date = 20251007
+const from = 1000129
+const to = 1000013
+const time = '1700'
+type = 'stationSelect';
 
 const getJourney = async (req, res) => {
   try {
-    const { from, to } = req.query;
-    if (!from || !to) {
-      return res.status(400).json({ message: 'From and to are required' });
-    }
-    const data = await tflService.getJourney(from, to);
+    const data = await tflService.TFLAPICall(from, to, time, date, type);
     res.json(data);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching journey', error: error.message });
   }
+
 };
 
 export {

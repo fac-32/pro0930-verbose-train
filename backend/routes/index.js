@@ -12,6 +12,6 @@ router.post('/openai', getOpenAIResponse);
 
 // Routes for TfL
 router.get('/tfl/stoppoints', getStopPoints);
-router.get('/tfl/journey', getJourney);
+router.get('/tfl/journey/:from/to/:to', getJourney);
 
 export default router;

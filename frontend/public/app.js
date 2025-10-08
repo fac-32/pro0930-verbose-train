@@ -36,4 +36,31 @@ document.addEventListener('DOMContentLoaded', () => {
       loader.style.display = 'none';
     }
   });
+
+  console.log('Fetching journey from TFL API...');
+fetch('/api/tfl/journey/940gzzluksx/to/940gzzlubnd')
+  .then(res => {
+    console.log('Response status:', res.status);
+    return res.text();
+  })
+  .then(text => {
+    console.log('Full TFL Response:', text);
+    try {
+      const data = JSON.parse(text);
+      console.log('Parsed data:', data);
+      
+      // If it's a 300, it should have disambiguationOptions
+      if (data.disambiguationOptions) {
+        console.log('Station choices:', data.disambiguationOptions);
+      }
+    } catch (e) {
+      console.error('Not valid JSON:', text);
+    }
+  })
+  .catch(error => {
+    console.error('Error fetching journey:', error);
+  });
+
 });
+
+
