@@ -1,3 +1,41 @@
+// these two variables should be assigned value when the user click on the drop down suggestion
+// let searchableStartPoint = '';
+// let searchableEndPoint = '';
+
+document.getElementById('submit-journey-search').addEventListener('click', () => {
+    console.log('button clicked');
+    if (!stopPointsValidation()) {
+        alert('nonononono');
+        return;
+    }
+    try {
+        // the server should return 1. the whole journey with stops, and 2. the Open ai suggestions
+        // presuming the response/data from the server is in an object
+        // const response = await fetch(`/some/server/endpoint/${searchableStartPoint}/${searchableEndPoint}`);
+        const response = {
+            tflJourney: ['Victoria', 'Green Park', 'Oxford Circus'],
+            openAiSuggestions: 'Blah blah blah'
+        };
+        appendDisplayChild('tfl-display', 'tfl-p', response.tflJourney);
+        appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+function stopPointsValidation () {  
+    console.log('validating');  
+    // return (searchableEndPoint === '' || searchableStartPoint === '') ? false : true;
+    return true;
+}
+
+function appendDisplayChild (parentId, childId, textContent) {
+    const childP = document.createElement('p');
+    childP.id = childId;
+    childP.textContent = textContent;
+    document.getElementById(parentId).appendChild(childP);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const promptInput = document.getElementById('prompt-input');
   const submitButton = document.getElementById('submit-prompt');
