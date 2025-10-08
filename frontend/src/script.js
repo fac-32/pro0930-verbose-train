@@ -16,6 +16,7 @@ document.getElementById('submit-journey-search').addEventListener('click', () =>
             tflJourney: ['Victoria', 'Green Park', 'Oxford Circus'],
             openAiSuggestions: 'Blah blah blah'
         };
+        document.getElementById('intro-placeholder').style.display = 'none';
         appendDisplayChild('tfl-display', 'tfl-p', response.tflJourney);
         appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
     } catch (error) {
@@ -33,7 +34,9 @@ function appendDisplayChild (parentId, childId, textContent) {
     const childP = document.createElement('p');
     childP.id = childId;
     childP.textContent = textContent;
-    document.getElementById(parentId).appendChild(childP);
+    const parentEl = document.getElementById(parentId);
+    parentEl.style.display = 'block';
+    parentEl.appendChild(childP);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
