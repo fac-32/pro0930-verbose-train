@@ -2,17 +2,17 @@ console.log('Loading: routes/index.js');
 import express from 'express';
 const router = express.Router();
 import { getExampleData } from '../controllers/exampleController.js';
-import { getOpenAIResponse } from '../controllers/openaicontroller.js';
+import { getOpenAIResponse } from '../controllers/openAIController.js'; // Corrected import path 
 import { 
     //    was causing build error, no longer a function by this name
     //    getStopPoints, 
     getJourney, 
     getJourneyWithAI, 
-    getStations} from '../controllers/tflController.js';
+    getStations, suggestStations } from '../controllers/tflController.js'; // added import for suggestStations 
 
 
 // Define a sample route
-router.get('/hello', getExampleData);
+router.get('/hello', getExampleData); 
 
 // Route for OpenAI
 router.post('/openai', getOpenAIResponse);
@@ -23,7 +23,8 @@ router.post('/openai', getOpenAIResponse);
 //router.get('/tfl/stoppoints', getStopPoints);
 router.get('/tfl/journey-with-ai', getJourneyWithAI);
 router.get('/tfl/journey/:from/to/:to', getJourney);
-router.get('tfl/stations', getStations)
+router.get('tfl/stations', getStations);
+router.post('/api/suggest-stations', suggestStations);
 
 
-export default router;
+export default router;  
