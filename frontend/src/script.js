@@ -1,17 +1,20 @@
-// these two variables should be assigned value when the user click on the drop down suggestion
-// let searchableStartPoint = '';
-// let searchableEndPoint = '';
-
 document.getElementById('submit-journey-search').addEventListener('click', () => {
     console.log('button clicked');
-    if (!stopPointsValidation()) {
-        alert('nonononono');
-        return;
-    }
+
+    // this is aligned with the input elements
+    // there is no need for a separate validation function given there are only 2 input fields on the frontend
+    // and the value used for validtion will be reused below
+    // const start = document.getElementById('start-station').dataset.searchableName;
+    // const end = document.getElementById('end-station').dataset.searchableName;
+    // if (start === undefined || end === undefined) {
+    //     alert('Please select both a start and end station from the dropdowns.');
+    //     return;
+    // }
+    
     try {
         // the server should return 1. the whole journey with stops, and 2. the Open ai suggestions
         // presuming the response/data from the server is in an object
-        // const response = await fetch(`/some/server/endpoint/${searchableStartPoint}/${searchableEndPoint}`);
+        // const response = await fetch(`/some/server/endpoint/${start}/${end}`);
         const response = {
             tflJourney: ['Victoria', 'Green Park', 'Oxford Circus'],
             openAiSuggestions: 'Blah blah blah'
@@ -23,12 +26,6 @@ document.getElementById('submit-journey-search').addEventListener('click', () =>
         console.log(error)
     }
 })
-
-function stopPointsValidation () {  
-    console.log('validating');  
-    // return (searchableEndPoint === '' || searchableStartPoint === '') ? false : true;
-    return true;
-}
 
 function appendDisplayChild (parentId, childId, textContent) {
     const childP = document.createElement('p');
