@@ -1,3 +1,6 @@
+import { startTrainAnimation } from './train-loader.js';
+startTrainAnimation('train-loader');
+
 document.addEventListener('DOMContentLoaded', () => {
   const promptInput = document.getElementById('prompt-input');
   const submitButton = document.getElementById('submit-prompt');
