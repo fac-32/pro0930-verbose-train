@@ -1,9 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 :root {
-    --primary-color: #2c3e50;
+    --primary-color: #263C52;
     --secondary-color: #3498db;
-    --background-color: #f4f7f6;
+    --tertiary-color: #3AA8F2;
+    --background-color: #80A36D;
+    --secondary-background-color: #98BF82;
     --text-color: #333;
     --border-radius: 5px;
     --box-shadow: 0 4px 12px #0000001a;
@@ -26,7 +28,7 @@ body {
 
 .container {
     text-align: center;
-    background-color: var(--background-color);
+    background-color: var(--secondary-background-color);
     padding: 2em 4em;
     border-radius: 8px;
     box-shadow: var(--box-shadow);
@@ -67,7 +69,7 @@ button {
 }
 
 button:hover {
-    background-color: var(--secondary-color);
+    background-color: var(--tertiary-color);
 }
 
 #response-container {
