@@ -1,7 +1,7 @@
   console.time('startup');
 
-  console.time('require:dotenv');
-  import 'dotenv/config';
+  console.time('require:dotenv'); //This is useful for debugging performance, but not required for production.
+  import 'dotenv/config'; //This is good practice for managing secrets and config.
   console.timeEnd('require:dotenv');
 
   console.time('require:express');
