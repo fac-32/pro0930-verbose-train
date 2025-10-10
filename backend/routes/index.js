@@ -3,8 +3,7 @@ import express from 'express';
 const router = express.Router();
 import { getExampleData } from '../controllers/exampleController.js';
 import { getOpenAIResponse } from '../controllers/openAIController.js'; // Corrected import path 
-import { getStopPoints, getJourney } from '../controllers/tflController.js';
-import { suggestStations } from '../controllers/tflController.js'; // added import for suggestStations 
+import { getStopPoints, getJourney, suggestStations } from '../controllers/tflController.js'; // added import for suggestStations 
 
 // Define a sample route
 router.get('/hello', getExampleData);
