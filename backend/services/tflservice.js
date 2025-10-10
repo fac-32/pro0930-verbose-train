@@ -80,7 +80,7 @@ export { getStopPoints, TFLAPICall };
  * @returns {Array} List of station suggestions
  */
 
-export async function getStationSuggestions(stationName, simulate = true) {
+export async function getStationSuggestions(stationName, simulate = false) {
   if (simulate) {
     // Dummy data for development/testing
     return [
@@ -100,20 +100,15 @@ export async function getStationSuggestions(stationName, simulate = true) {
     console.log('TfL API response data:', data);
 
 
-
-    // Extract station suggestions from matches array - with not filter
-    // if (response.status === 200 && Array.isArray(data.matches)) {
-    //   return data.matches.map(match => ({
-    //     name: match.name
-    //   }));
-    // }
-
-
-
     // Filter for tube/underground stations only, placeType StopPoint, and use commonName if available
     if (response.status === 200 && Array.isArray(data.matches)) {
       // Debug: log each match to inspect properties
-      data.matches.forEach(match => console.log(match));
+      data.matches.forEach(match => {
+        console.log('name:', match.name);
+        console.log('modes:', match.modes);
+        console.log('type:', match.type);
+        console.log('placeType:', match.placeType);
+      });
 
       return data.matches
         .filter(match =>

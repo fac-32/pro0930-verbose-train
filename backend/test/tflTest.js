@@ -7,32 +7,27 @@
 // import { getStationSuggestions, getJourneyDetails } from '../services/tflservice.js';
 import { getStationSuggestions } from '../services/tflservice.js';
 
+import readline from 'readline';
 
-async function test() {
-  // Simulate user input for two stations
-  const stationInput1 = 'Oxford Circus';
-  const stationInput2 = 'Victoria';
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 
-  // Get suggestions for both inputs (simulate = true for dummy data)
-  const suggestions1 = await getStationSuggestions(stationInput1, false); //To test with the real API, change true to false 
-  const suggestions2 = await getStationSuggestions(stationInput2, false); //To test with the real API, change true to false 
+rl.question('Enter first station name: ', async (stationInput1) => {
+  rl.question('Enter second station name: ', async (stationInput2) => {
+    const suggestions1 = await getStationSuggestions(stationInput1, false);
+    const suggestions2 = await getStationSuggestions(stationInput2, false);
 
-  console.log('Suggestions for input 1:', suggestions1);
-  console.log('Suggestions for input 2:', suggestions2); 
+    console.log('Suggestions for input 1:', suggestions1);
+    console.log('Suggestions for input 2:', suggestions2);
+
+    rl.close();
+  });
+});
 
 
 
-//------------------------------------------------------
-// Uncomment below to test with real API calls - set simulate to false
-//------------------------------------------------------------ 
-
-  // const realSuggestions1 = await getStationSuggestions(stationInput1, false);
-  // const realJourney = await getJourneyDetails(selectedStation1, selectedStation2, false);
-  // console.log('Real API suggestions:', realSuggestions1);
-  // console.log('Real API journey:', realJourney);
-}
-
-test();
 
 
 
