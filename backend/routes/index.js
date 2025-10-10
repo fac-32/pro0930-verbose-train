@@ -16,4 +16,9 @@ router.get('/tfl/stoppoints', getStopPoints);
 router.get('/tfl/journey/:from/to/:to', getJourney);
 router.post('/api/suggest-stations', suggestStations);
 
+// Routes for TfL
+router.get('/tfl/stoppoints', getStopPoints);
+router.get('/tfl/journey/:from/to/:to', getJourney);
+router.post('/api/suggest-stations', suggestStations);
+
 export default router;
