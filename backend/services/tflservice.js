@@ -84,33 +84,54 @@ export async function getStationSuggestions(stationName, simulate = true) {
   if (simulate) {
     // Dummy data for development/testing
     return [
-      { name: 'Oxford Circus' },
-      { name: 'Oxford Road' },
-      { name: 'Oxshott' }
+      { name: 'Oxford Circus Underground Station' },
+      { name: 'Victoria Underground Station' }
     ];
   }
   try {
     // Use Justin's variable names and node-fetch
-    const url = `${TFL_API_URL}/${encodeURIComponent(stationName)}?app_key=${TFL_API_KEY}&mode=tube`;
+    // const url = `${TFL_API_URL}/${encodeURIComponent(stationName)}?app_key=${TFL_API_KEY}&mode=tube`; // this is not the right API to suggest stations
+    const url = `https://api.tfl.gov.uk/StopPoint/Search/${encodeURIComponent(stationName)}?app_key=${TFL_API_KEY}`;
     const response = await fetch(url);
     const data = await response.json();
-    // If TFL returns a 300, suggestions are in data.disambiguationOptions
-    if (response.status === 300 && data.disambiguationOptions) {
-      return data.disambiguationOptions.map(option => ({
-        name: option.description || option.matchValue
-      }));
-    }
-    // If exact match, return single station
-    if (response.status === 200 && data.journeys) {
-      return [{ name: stationName }];
+
+    // lines for debugging:
+    console.log('TfL API response status:', response.status);
+    console.log('TfL API response data:', data);
+
+
+
+    // Extract station suggestions from matches array - with not filter
+    // if (response.status === 200 && Array.isArray(data.matches)) {
+    //   return data.matches.map(match => ({
+    //     name: match.name
+    //   }));
+    // }
+
+
+
+    // Filter for tube/underground stations only, placeType StopPoint, and use commonName if available
+    if (response.status === 200 && Array.isArray(data.matches)) {
+      // Debug: log each match to inspect properties
+      data.matches.forEach(match => console.log(match));
+
+      return data.matches
+        .filter(match =>
+          Array.isArray(match.modes) &&
+          match.modes.includes('tube')
+          // Uncomment below if you confirm placeType or type is present and correct
+          // && (match.placeType === 'StopPoint' || match.type === 'StopPoint')
+        )
+        .map(match => ({
+          name: match.commonName || match.name
+        }));
     }
     return [];
   } catch (error) {
     // On error, return dummy data for development
     return [
-      { name: 'Oxford Circus' },
-      { name: 'Oxford Road' },
-      { name: 'Oxshott' }
+      { name: 'Oxford Circus Underground Station' },
+      { name: 'Victoria Underground Station' }
     ];
   }
 }
