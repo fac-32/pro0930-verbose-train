@@ -25,5 +25,3 @@ rl.question('Enter first station name: ', async (stationInput1) => {
     rl.close();
   });
 });
-
-
