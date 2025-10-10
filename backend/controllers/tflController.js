@@ -33,31 +33,27 @@ const getJourney = async (req, res) => {
 
 };
 
-export {
-  getStopPoints,
-  getJourney,
-};
 
 //--------------------------------------
 // Ivon's code: Station Suggestions (TFL 300 response)
 //--------------------------------------
 
-// Import service functions from tflservice.js
-import { getStationSuggestions } from '../services/tflservice.js';
+const suggestStations = async (req, res) => {
+  const { stationName } = req.body; // Reads "user station's name input" from the request body
+  try {
+    const suggestions = await tflService.getStationSuggestions(stationName, false); // flag to set to false for real API
+    res.json({ suggestions }); // Sends suggestions back to the client
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching station suggestions', error: error.message });
+  }
+};
 
-/**
- * Controller for station suggestions.
- * Handles POST requests to /api/suggest-stations.
- * @param {Request} req - Express request object
- * @param {Response} res - Express response object
- */
-export async function suggestStations(req, res) {
-  // Get stationName from request body
-  const { stationName } = req.body;
-  // Set simulate to true for dummy data, false for real API
-  const suggestions = await getStationSuggestions(stationName, false);
-  // Send suggestions as JSON response
-  res.json({ suggestions });
-}
+
+
+export {
+  getStopPoints,
+  getJourney,
+  suggestStations, // added export for suggestStations
+};
 
 
