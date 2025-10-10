@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   console.log('Fetching journey from TFL API...');
-fetch('/api/tfl/journey/940gzzluksx/to/940gzzlubnd')
+  fetch('/api/tfl/journey/1000129/to/1000013')
   .then(res => {
     console.log('Response status:', res.status);
     return res.text();
