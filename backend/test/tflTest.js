@@ -1,4 +1,7 @@
-// Test script to simulate user input and API calls (ES Modules, fully commented).
+// Test script to simulate user input and API calls 
+// This test script demonstrates the flow of getting station suggestions
+// and then fetching journey details based on user selections.
+// Run this script with Node.js 
 
 // Import service functions from tflservice.js
 import { getStationSuggestions, getJourneyDetails } from '../services/tflservice.js';
@@ -9,8 +12,8 @@ async function test() {
   const stationInput2 = 'finsbury';
 
   // Get suggestions for both inputs (simulate = true for dummy data)
-  const suggestions1 = await getStationSuggestions(stationInput1, true);
-  const suggestions2 = await getStationSuggestions(stationInput2, true);
+  const suggestions1 = await getStationSuggestions(stationInput1, true); //To test with the real API, change true to false 
+  const suggestions2 = await getStationSuggestions(stationInput2, true); //To test with the real API, change true to false 
 
   console.log('Suggestions for input 1:', suggestions1);
   console.log('Suggestions for input 2:', suggestions2);
@@ -20,10 +23,13 @@ async function test() {
   const selectedStation2 = suggestions2[0].name;
 
   // Get journey details (simulate = true for dummy data)
-  const journey = await getJourneyDetails(selectedStation1, selectedStation2, true);
+  const journey = await getJourneyDetails(selectedStation1, selectedStation2, true); //To test with the real API, change true to false 
   console.log('Journey (dummy):', journey);
 
-  // To test real API, set simulate to false (requires valid API key in .env)
+//------------------------------------------------------
+// Uncomment below to test with real API calls - set simulate to false
+//------------------------------------------------------------ 
+
   // const realSuggestions1 = await getStationSuggestions(stationInput1, false);
   // const realJourney = await getJourneyDetails(selectedStation1, selectedStation2, false);
   // console.log('Real API suggestions:', realSuggestions1);
@@ -35,11 +41,5 @@ test();
 
 
 
-// Note: Uncomment the real API calls after ensuring your .env has a valid TFL_API_KEY
-// and you want to test against the live TfL API.
-// Also, handle errors as needed in production code.
-// This test script demonstrates the flow of getting station suggestions
-// and then fetching journey details based on user selections.
-// Run this script with Node.js (ensure ES module support in your environment)
-// e.g., node --experimental-modules backend/test/tflTest.js
-// End of backend/test/tflTest.js
+
+
