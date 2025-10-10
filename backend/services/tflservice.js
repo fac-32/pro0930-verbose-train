@@ -1,42 +1,80 @@
-// import fetch from 'node-fetch';
-
-// const TFL_API_URL = 'https://api.tfl.gov.uk/Journey/JourneyResults/';
-
-// const getStopPoints = async (from, to, time) => {
-//   // Placeholder for TfL API call
-
-  
-//   return Promise.resolve({ message: "TfL StopPoint API call placeholder" });
-// };
-
-// const getJourney = async (from, to) => {
-//   // Placeholder for TfL API call
-//   return Promise.resolve({ message: "TfL Journey API call placeholder" });
-// };
-
-// export default {
-//   getStopPoints,
-//   getJourney,
-// };
-
-
-
-// Import axios for HTTP requests
-import axios from 'axios';
 // Import dotenv to load environment variables from .env file
 import dotenv from 'dotenv';
 
 // Load environment variables
 dotenv.config();
 
-// Base URL for TfL Journey Planner API
-const BASE_URL = 'https://api.tfl.gov.uk/Journey/JourneyResults';
-// TfL API key from environment variables
+//------------------
+// Justin code
+//------------------
+
+import fetch from 'node-fetch';
+
+const TFL_API_URL = 'https://api.tfl.gov.uk/Journey/JourneyResults/';
+
 const TFL_API_KEY = process.env.TFL_API_KEY;
+
+
+
+const getStopPoints = async (date, from, to, time) => {
+  // Placeholder for TfL API call
+
+};
+
+const TFLAPICall = async (from, to, time, date) => {
+  const URL = `${TFL_API_URL}/${encodeURIComponent(from)}/to/${encodeURIComponent(to)}`;
+
+  const params = new URLSearchParams({
+    app_key: TFL_API_KEY,
+    mode: 'tube'
+  });
+
+  if (date) params.append('date', date);
+  if (time) params.append('time', time);
+  if (date && time) params.append('timeIs', 'Departing');
+
+  const fullURL = `${URL}?${params.toString()}`;
+  
+  console.log('Fetching from TFL:', fullURL);
+
+  try {
+    const response = await fetch(fullURL);
+    const responseText = await response.text();
+    
+    console.log('TFL Response Status:', response.status);
+    
+    const data = JSON.parse(responseText);
+    
+    if (response.status === 300 && data.disambiguationOptions) {
+      console.log('Multiple station matches found:');
+      data.disambiguationOptions.forEach(option => {
+        console.log('  -', option.description || option.matchValue);
+      });
+    }
+    
+    return {
+      status: response.status,
+      data: data
+    };
+    
+  } catch (error) {
+    console.error('Error fetching journey:', error);
+    throw error;
+  }
+}
+
+export { getStopPoints, TFLAPICall };
+
+
+
+
+// -------------------
+// Ivon's code: Station Suggestions (TFL 300 response)
+// -------------------
 
 /**
  * Returns a list of suggested stations based on user input.
- * If simulate is true, returns dummy data. Otherwise, calls the TfL API.
+ * If simulate is true, returns dummy data. Otherwise, calls the TfL API and handles 300 response.
  * @param {string} stationName - The name entered by the user
  * @param {boolean} simulate - If true, use dummy data; if false, call real API
  * @returns {Array} List of station suggestions
@@ -52,21 +90,20 @@ export async function getStationSuggestions(stationName, simulate = true) {
     ];
   }
   try {
-    // Build the API URL with the station name and API key
-    const url = `${BASE_URL}/${encodeURIComponent(stationName)}?key=${TFL_API_KEY}`;
-    // Make GET request to TfL API
-    const response = await axios.get(url);
-    // If TFL returns a 300, suggestions are in response.data.alternatives
-    if (response.status === 300 && response.data.alternatives) {
-      return response.data.alternatives.map(station => ({
-        name: station.placeName
+    // Use Justin's variable names and node-fetch
+    const url = `${TFL_API_URL}/${encodeURIComponent(stationName)}?app_key=${TFL_API_KEY}&mode=tube`;
+    const response = await fetch(url);
+    const data = await response.json();
+    // If TFL returns a 300, suggestions are in data.disambiguationOptions
+    if (response.status === 300 && data.disambiguationOptions) {
+      return data.disambiguationOptions.map(option => ({
+        name: option.description || option.matchValue
       }));
     }
     // If exact match, return single station
-    if (response.status === 200 && response.data.journeys) {
+    if (response.status === 200 && data.journeys) {
       return [{ name: stationName }];
     }
-    // If no match, return empty array
     return [];
   } catch (error) {
     // On error, return dummy data for development
@@ -75,50 +112,5 @@ export async function getStationSuggestions(stationName, simulate = true) {
       { name: 'Oxford Road' },
       { name: 'Oxshott' }
     ];
-  }
-}
-
-/**
- * Returns journey details between two confirmed stations.
- * If simulate is true, returns dummy data. Otherwise, calls the TfL API.
- * @param {string} fromStation - The starting station
- * @param {string} toStation - The destination station
- * @param {boolean} simulate - If true, use dummy data; if false, call real API
- * @returns {Object} Journey details including intermediate stops
- */
-export async function getJourneyDetails(fromStation, toStation, simulate = true) {
-  if (simulate) {
-    // Dummy data for development/testing
-    return {
-      from: fromStation,
-      to: toStation,
-      journey: ['Oxford Circus', 'Bond Street', 'Baker Street', toStation]
-    };
-  }
-  try {
-    // Build the API URL with the station names and API key
-    const url = `${BASE_URL}/${encodeURIComponent(fromStation)}/to/${encodeURIComponent(toStation)}?key=${TFL_API_KEY}`;
-    // Make GET request to TfL API
-    const response = await axios.get(url);
-    // If successful, extract journey details
-    if (response.status === 200 && response.data.journeys) {
-      const journey = response.data.journeys[0];
-      // Flatten all stop points from all legs of the journey
-      const stops = journey.legs.flatMap(leg => leg.path.stopPoints.map(stop => stop.name));
-      return {
-        from: fromStation,
-        to: toStation,
-        journey: stops
-      };
-    }
-    // If no journey found, return empty journey
-    return { from: fromStation, to: toStation, journey: [] };
-  } catch (error) {
-    // On error, return dummy data for development
-    return {
-      from: fromStation,
-      to: toStation,
-      journey: ['Oxford Circus', 'Bond Street', 'Baker Street', toStation]
-    };
   }
 }
