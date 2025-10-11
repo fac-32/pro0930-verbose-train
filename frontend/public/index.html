@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verbose Train</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
     <div class="container">
@@ -20,11 +20,12 @@
     <div class="container" id="ai-container">
         <h2>OpenAI Interaction</h2>
         <textarea id="prompt-input" rows="4" cols="50" placeholder="Enter your prompt here..."></textarea>
+        <!-- <textarea id="prompt-input" rows="4" cols="50" placeholder="Enter stops, separated by commas (e.g. Victoria, Euston, King's Cross)"></textarea> -->
         <br>
         <button id="submit-prompt">Get AI Response</button>
         <div class="loader" id="loader"></div>
         <div id="response-container"></div>
     </div>
-    <script src="app.js"></script>
+    <script src="/src/script.js"></script>
 </body>
 </html>
