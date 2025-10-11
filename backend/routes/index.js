@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router();
 import { getExampleData } from '../controllers/exampleController.js';
 import { getOpenAIResponse } from '../controllers/openaicontroller.js';
+import { getStopPoints, getJourney, getJourneyWithAI } from '../controllers/tflController.js';
 import { getJourney, getStations } from '../controllers/tflController.js';
 
 // Define a sample route
@@ -11,6 +12,9 @@ router.get('/hello', getExampleData);
 router.post('/openai', getOpenAIResponse);
 
 // Routes for TfL
+router.get('/tfl/stoppoints', getStopPoints);
+router.get('/tfl/journey', getJourney);
+router.get('/tfl/journey-with-ai', getJourneyWithAI);
 router.get('/tfl/journey/', getJourney);
 router.get('tfl/stations', getStations)
 

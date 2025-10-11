@@ -37,30 +37,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  console.log('Fetching journey from TFL API...');
-  fetch('/api/tfl/journey/1000129/to/1000013')
-  .then(res => {
-    console.log('Response status:', res.status);
-    return res.text();
-  })
-  .then(text => {
-    console.log('Full TFL Response:', text);
-    try {
-      const data = JSON.parse(text);
-      console.log('Parsed data:', data);
-      
-      // If it's a 300, it should have disambiguationOptions
-      if (data.disambiguationOptions) {
-        console.log('Station choices:', data.disambiguationOptions);
-      }
-    } catch (e) {
-      console.error('Not valid JSON:', text);
+  const fromInput = document.getElementById('from-input');
+  const toInput = document.getElementById('to-input');
+  const submitJourneyButton = document.getElementById('submit-journey');
+  const journeyResponseContainer = document.getElementById('journey-response-container');
+  const journeyLoader = document.getElementById('journey-loader');
+
+  submitJourneyButton.addEventListener('click', async () => {
+    const from = fromInput.value;
+    const to = toInput.value;
+
+    if (!from || !to) {
+      alert('Please enter both a starting point and a destination.');
+      return;
     }
-  })
-  .catch(error => {
-    console.error('Error fetching journey:', error);
+
+    journeyLoader.style.display = 'block';
+    journeyResponseContainer.innerHTML = '';
+
+    try {
+      const response = await fetch(`/api/tfl/journey-with-ai?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
+
+      if (!response.ok) {
+        throw new Error('Failed to get journey summary from the server.');
+      }
+
+      const data = await response.json();
+      journeyResponseContainer.innerHTML = `<p>${data.summary}</p>`;
+    } catch (error) {
+      journeyResponseContainer.innerHTML = `<p style="color: red;">${error.message}</p>`;
+    } finally {
+      journeyLoader.style.display = 'none';
+    }
   });
-
 });
-
-
