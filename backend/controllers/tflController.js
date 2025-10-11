@@ -22,7 +22,7 @@ const date = 20251007
 const from = 1000129
 const to = 1000013
 const time = '1700'
-type = 'stationSelect';
+const type = 'stationSelect'; // added const to declare the variable
 
 const getJourney = async (req, res) => {
   try {
