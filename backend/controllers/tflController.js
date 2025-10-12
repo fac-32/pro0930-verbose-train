@@ -146,7 +146,25 @@ const getJourneyWithAI = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Error fetching journey with AI summary', error: error.message });
   }
+
 };
+
+
+//--------------------------------------
+// Ivon's code: Station Suggestions (TFL 300 response)
+//--------------------------------------
+
+const suggestStations = async (req, res) => {
+  const { stationName } = req.body; // Reads "user station's name input" from the request body
+  try {
+    const suggestions = await tflService.getStationSuggestions(stationName, false); // flag to set to false for real API
+    res.json({ suggestions }); // Sends suggestions back to the client
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching station suggestions', error: error.message });
+  }
+};
+
+
 
 export {
   getStations,

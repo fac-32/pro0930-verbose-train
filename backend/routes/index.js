@@ -1,5 +1,6 @@
 console.log('Loading: routes/index.js');
 import express from 'express';
+
 const router = express.Router();
 import { getExampleData } from '../controllers/exampleController.js';
 import { getOpenAIResponse } from '../controllers/openaicontroller.js';
@@ -17,7 +18,6 @@ router.get('/tfl/stoppoints', getStopPoints);
 router.get('/tfl/journey', getJourney);
 router.get('/tfl/journey-with-ai', getJourneyWithAI);
 router.get('/tfl/journey/', getJourney);
-router.get('tfl/stations', getStations)
 
 
 export default router;
