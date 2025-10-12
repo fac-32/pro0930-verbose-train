@@ -1,4 +1,8 @@
-  console.time('startup');
+import 'dotenv/config';
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import apiRouter from './backend/routes/index.js';
 
   console.time('require:dotenv'); //This is useful for debugging performance, but not required for production.
   import 'dotenv/config'; //This is good practice for managing secrets and config.
@@ -23,27 +27,21 @@
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
-  const app = express();
-  const PORT = process.env.PORT || 3000;
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-  // --- Middleware ---
-  app.use(express.json()); // To parse JSON bodies
-  app.use(express.urlencoded({ extended: true })); // To parse URL-encoded bodies
+// --- Middleware ---
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-  // --- Serve Frontend ---
-  // This serves the static files from your frontend's public directory
-  app.use(express.static(path.join(__dirname, 'frontend', 'public')));
+// --- Serve Frontend ---
+// This must come before the API routes
+app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 
-  // Serve additional static assets (CSS/JS) from frontend/src under /assets
-  // This allows files in frontend/src (sibling to public) to be requested as /assets/...
-  app.use('/src', express.static(path.join(__dirname, 'frontend', 'src')));
+// --- API Routes ---
+app.use('/api', apiRouter);
 
-  // --- API Routes ---
-  // All backend routes will be prefixed with /api
-  app.use('/api', apiRouter);
-
-  // --- Start Server ---
-  console.timeEnd('startup');
-  app.listen(PORT, () => {
-    console.log(`✅ Server is running at http://localhost:${PORT}`);
-  });
+// --- Start Server ---
+app.listen(PORT, () => {
+  console.log(`✅ Server is running at http://localhost:${PORT}`);
+});
