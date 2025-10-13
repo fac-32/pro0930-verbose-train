@@ -134,3 +134,10 @@ button:disabled {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+#map {
+    height: 400px;
+    margin-top: 1.5rem;
+    border-radius: 5px;
+    border: 1px solid var(--light-gray);
+}
