@@ -1,13 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
 :root {
-    --primary-color: #3498db;
-    --secondary-color: #2c3e50;
-    --background-color: #ecf0f1;
-    --container-background: #ffffff;
+    --primary-color: #4CAF50;
+    --secondary-color: #2E7D32;
+    --background-color: #E8F5E9;
+    --container-background: #FFFFFF;
     --text-color: #333;
     --light-gray: #bdc3c7;
-    --error-color: #e74c3c;
+    --error-color: #FF9800;
 }
 
 body {
@@ -68,8 +68,8 @@ p {
     margin-bottom: 1rem;
 }
 
-input[type="text"],
-textarea {
+.container input[type="text"],
+.container textarea {
     width: 100%;
     padding: 0.8rem;
     border-radius: 5px;
@@ -79,14 +79,14 @@ textarea {
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-input[type="text"]:focus,
-textarea:focus {
+.container input[type="text"]:focus,
+.container textarea:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
 
-button {
+.container button {
     background-color: var(--primary-color);
     color: white;
     border: none;
@@ -98,12 +98,12 @@ button {
     transition: background-color 0.3s, transform 0.2s;
 }
 
-button:hover {
-    background-color: #2980b9;
+.container button:hover {
+    background-color: #45a049;
     transform: translateY(-2px);
 }
 
-button:disabled {
+.container button:disabled {
     background-color: var(--light-gray);
     cursor: not-allowed;
     transform: none;
