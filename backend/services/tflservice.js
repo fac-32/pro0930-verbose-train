@@ -120,4 +120,10 @@ const TFLAPICall = async (from, to, time, date) => {
   }
 }
 
-export { getStopPoints, TFLAPICall, getStationLocation };
+export { 
+
+getJourney,
+TFLAPICall,
+getStationLocation
+
+};

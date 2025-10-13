@@ -21,6 +21,10 @@ app.use(express.urlencoded({ extended: true }));
 // This must come before the API routes
 app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 
+// Serve additional static assets (CSS/JS) from frontend/src under /assets
+// This allows files in frontend/src (sibling to public) to be requested as /assets/...
+app.use('/src', express.static(path.join(__dirname, 'frontend', 'src')));
+
 // --- API Routes ---
 app.use('/api', apiRouter);
 
