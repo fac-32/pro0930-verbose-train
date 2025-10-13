@@ -7,37 +7,34 @@
     <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
-    <div class="container">
+    <header>
         <h1>🚂 Verbose Train 🚂</h1>
-        <p>All aboard! The Verbose Train is getting ready to depart.</p>
-        <p>This page is currently under construction. Please check back later for the full experience!</p>
-        <div class="construction">
-            <span>🚧</span>
-            <span>🛠️</span>
-            <span>👷</span>
+    </header>
+    <main class="main-container">
+        <div class="column" id="journey-column">
+            <div class="container" id="journey-container">
+                <h2>TFL Journey Planner</h2>
+                <p>Get an AI-powered summary of your next journey.</p>
+                <div class="input-group">
+                    <input type="text" id="from-input" placeholder="From...">
+                    <input type="text" id="to-input" placeholder="To...">
+                </div>
+                <button id="submit-journey">Get Journey Summary</button>
+                <div class="loader" id="journey-loader"></div>
+                <div id="journey-response-container" class="response-container"></div>
+            </div>
         </div>
-    </div>
-    <div class="container" id="ai-container">
-        <h2>OpenAI Interaction</h2>
-        <textarea id="prompt-input" rows="4" cols="50" placeholder="Enter your prompt here..."></textarea>
-        <!-- <textarea id="prompt-input" rows="4" cols="50" placeholder="Enter stops, separated by commas (e.g. Victoria, Euston, King's Cross)"></textarea> -->
-        <br>
-        <button id="submit-prompt">Get AI Response</button>
-        <div class="loader" id="loader"></div>
-        <div id="response-container"></div>
-    </div>
-
-    <div class="container" id="journey-container">
-        <h2>TFL Journey Planner</h2>
-        <input type="text" id="from-input" placeholder="From...">
-        <input type="text" id="to-input" placeholder="To...">
-        <br>
-        <button id="submit-journey">Get Journey Summary</button>
-        <div class="loader" id="journey-loader"></div>
-        <div id="journey-response-container"></div>
-    </div>
-
+        <div class="column" id="ai-column">
+            <div class="container" id="ai-container">
+                <h2>OpenAI Interaction</h2>
+                <p>Ask the AI anything.</p>
+                <textarea id="prompt-input" rows="4" placeholder="Enter your prompt here..."></textarea>
+                <button id="submit-prompt">Get AI Response</button>
+                <div class="loader" id="loader"></div>
+                <div id="response-container" class="response-container"></div>
+            </div>
+        </div>
+    </main>
     <script src="app.js"></script>
-    <script src="/src/script.js"></script>
 </body>
 </html>
