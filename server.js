@@ -4,24 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import apiRouter from './backend/routes/index.js';
 
-  console.time('require:dotenv'); //This is useful for debugging performance, but not required for production.
-  import 'dotenv/config'; //This is good practice for managing secrets and config.
-  console.timeEnd('require:dotenv');
-
-  console.time('require:express');
-  import express from 'express';
-  console.timeEnd('require:express');
-
-  console.time('require:path');
-  import path from 'path';
-  console.timeEnd('require:path');
-
-  import { fileURLToPath } from 'url';
-
-  // Import your main router
-  console.time('require:router');
-  import apiRouter from './backend/routes/index.js';
-  console.timeEnd('require:router');
+console.log('Starting server...');
 
   // Get __dirname equivalent in ES modules
   const __filename = fileURLToPath(import.meta.url);
