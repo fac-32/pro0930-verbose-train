@@ -14,9 +14,8 @@ router.post('/openai', getOpenAIResponse);
 
 // Routes for TfL
 router.get('/tfl/stoppoints', getStopPoints);
-router.get('/tfl/journey', getJourney);
 router.get('/tfl/journey-with-ai', getJourneyWithAI);
-router.get('/tfl/journey/', getJourney);
+router.get('/tfl/journey/:from/to/:to', getJourney);
 router.get('tfl/stations', getStations)
 
 

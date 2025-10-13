@@ -51,29 +51,31 @@ const getJourney = async (from, to) => {
 };
 
 const getStationLocation = async (naptanId) => {
-  URL = https://api.tfl.gov.uk/StopPoint/
-
-  URL = URL + NaptanId + '?app_key='
-
-  const params = new URLSearchParams({
-    app_key: TFL_API_KEY,
-  });
-
-  const fullURL = `${URL}?${params.toString()}`;
-
-  fetch(fullURL)
-  .then(response => {
-    if (response.ok) {
-      return response.json();
+  const url = `https://api.tfl.gov.uk/StopPoint/${naptanId}?app_key=${TFL_API_KEY}`;
+  
+  console.log(`Fetching station details for: ${naptanId}`);
+  
+  try {
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error('Station Request failed!');
     }
-    throw new Error('Station Request failed!');
-  }, networkError => {
-    console.log(networkError.message)
+    
+    const data = await response.json();
+    
+    return {
+      commonName: data.commonName,
+      naptanId: data.naptanId,
+      lat: data.lat,
+      lon: data.lon
+    };
+    
+  } catch (error) {
+    console.error('Error fetching station details:', error.message);
+    throw error;
   }
-
-)
-
-  }
+};
 
 
 const TFLAPICall = async (from, to, time, date) => {

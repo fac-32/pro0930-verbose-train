@@ -19,14 +19,17 @@ const stationInfoBundler = (commonName, naptanId, lat, lon) => {
     commonName: commonName,
     lat: lat,
     lon: lon,
-    naptanId: naptanId,
+    naptanId: naptanId
   }
 }
 
 const getJourney = async (req, res) => {
   try {
     let data = await tflService.TFLAPICall(from, to, time, date, type);
+    console.log(data);
     data = data.data
+
+    
 
     const allStops = [];
 
@@ -43,27 +46,36 @@ const getJourney = async (req, res) => {
 
     const assembledJourney = [];
 
-    allStops.forEach((station) => {
-      let commonName;
-      let naptanId;
-      let lat;
-      let lon;
 
-      if (station.commonName && station.id || station.commonName && station.naptanId || station.name && station.id) {
-       commonName = station.commonName || station.name
-       naptanId = station.id || station.naptanId
-        if (station.lat && station.lon) {
-          lat = station.lat
-        lon = station.lon
-        } else {
-          const fetchedStationLocation = getStationLocation(naptanId);
-          lat = fetchedStationLocation.lat;
-          lon = fetchedStationLocation.lon;
-        }
-       assembledJourney.push(stationInfoBundler(commonName, naptanId, lat, lon));
-    })
+for (const station of allStops) {
+  let commonName;
+  let naptanId;
+  let lat;
+  let lon;
 
-    res.json(assembledJourney);
+  if (station.commonName && station.id || station.commonName && station.naptanId || station.name && station.id) {
+   
+    commonName = station.commonName || station.name;
+   
+    naptanId = station.id || station.naptanId;
+    
+    if (station.lat && station.lon) {
+      lat = station.lat;
+      lon = station.lon;
+    
+    } else {
+      
+      const fetchedStationLocation = await tflService.getStationLocation(naptanId);
+      console.log(fetchedStationLocation);
+      lat = fetchedStationLocation.lat;
+      lon = fetchedStationLocation.lon;
+    }
+    
+    assembledJourney.push(stationInfoBundler(commonName, naptanId, lat, lon));
+  }
+}  
+
+res.json(assembledJourney);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching journey', error: error.message });
   }
