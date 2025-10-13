@@ -1,3 +1,41 @@
+document.getElementById('submit-journey-search').addEventListener('click', () => {
+    console.log('button clicked');
+
+    // this is aligned with the input elements
+    // there is no need for a separate validation function given there are only 2 input fields on the frontend
+    // and the value used for validtion will be reused below
+    // const start = document.getElementById('start-station').dataset.searchableName;
+    // const end = document.getElementById('end-station').dataset.searchableName;
+    // if (start === undefined || end === undefined) {
+    //     alert('Please select both a start and end station from the dropdowns.');
+    //     return;
+    // }
+    
+    try {
+        // the server should return 1. the whole journey with stops, and 2. the Open ai suggestions
+        // presuming the response/data from the server is in an object
+        // const response = await fetch(`/some/server/endpoint/${start}/${end}`);
+        const response = {
+            tflJourney: ['Victoria', 'Green Park', 'Oxford Circus'],
+            openAiSuggestions: 'Blah blah blah'
+        };
+        document.getElementById('intro-placeholder').style.display = 'none';
+        appendDisplayChild('tfl-display', 'tfl-p', response.tflJourney);
+        appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+function appendDisplayChild (parentId, childId, textContent) {
+    const childP = document.createElement('p');
+    childP.id = childId;
+    childP.textContent = textContent;
+    const parentEl = document.getElementById(parentId);
+    parentEl.style.display = 'block';
+    parentEl.appendChild(childP);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const promptInput = document.getElementById('prompt-input');
   const submitButton = document.getElementById('submit-prompt');
