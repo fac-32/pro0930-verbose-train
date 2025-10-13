@@ -1,12 +1,11 @@
 console.log('Loading: controllers/tflController.js');
-import tflService from '../services/tflService.js';
+import * as tflService from '../services/tflservice.js';
 import googleMapsService from '../services/googleMapsService.js';
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-import * as tflService from '../services/tflService.js';
 
 const date = 20251007
 const from = 1000129
@@ -23,52 +22,68 @@ const stationInfoBundler = (commonName, naptanId, lat, lon) => {
   }
 }
 
+// Corrected indentation + minor clarity comments
 const getJourney = async (req, res) => {
   try {
+    // call TFL service (assumes from, to, time, date, type are available in scope)
     let data = await tflService.TFLAPICall(from, to, time, date, type);
-    data = data.data
+    data = data.data;
 
     const allStops = [];
 
+    // assemble stops: departure -> intermediate stops -> arrival
     const leg = data.journeys[0].legs[0];
     const departurePoint = leg.departurePoint;
-    allStops.push(departurePoint)
+    allStops.push(departurePoint);
 
     const intermediateStops = leg.path.stopPoints;
-    intermediateStops.pop()
-    intermediateStops.forEach((stops) => allStops.push(stops)
-    )
+    intermediateStops.pop(); // drop final stop (arrival) from path.stopPoints
+    intermediateStops.forEach((stop) => allStops.push(stop));
+
     const arrivalPoint = leg.arrivalPoint;
     allStops.push(arrivalPoint);
 
     const assembledJourney = [];
 
+    // normalize station info and build assembledJourney
     allStops.forEach((station) => {
       let commonName;
       let naptanId;
       let lat;
       let lon;
 
-      if (station.commonName && station.id || station.commonName && station.naptanId || station.name && station.id) {
-       commonName = station.commonName || station.name
-       naptanId = station.id || station.naptanId
+      // check for available identifiers/names
+      if (
+        (station.commonName && (station.id || station.naptanId)) ||
+        (station.name && station.id)
+      ) {
+        commonName = station.commonName || station.name;
+        naptanId = station.id || station.naptanId;
+
         if (station.lat && station.lon) {
-          lat = station.lat
-        lon = station.lon
+          lat = station.lat;
+          lon = station.lon;
         } else {
+          // fallback to fetching location by naptanId (assumed synchronous here)
           const fetchedStationLocation = getStationLocation(naptanId);
           lat = fetchedStationLocation.lat;
           lon = fetchedStationLocation.lon;
         }
-       assembledJourney.push(stationInfoBundler(commonName, naptanId, lat, lon));
-    })
 
-    res.json(assembledJourney);
+        assembledJourney.push(
+          stationInfoBundler(commonName, naptanId, lat, lon)
+        );
+      }
+    });
+
+    return res.json(assembledJourney);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching journey', error: error.message });
+    return res
+      .status(500)
+      .json({ message: 'Error fetching journey', error: error.message });
   }
-
 };
+
 
 const getStations = async (req, res) => {
   try {

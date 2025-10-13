@@ -1,91 +1,87 @@
-console.log('Loading: services/tflService.js');
 import fetch from 'node-fetch';
 
-const TFL_API_URL = 'https://api.tfl.gov.uk/Journey/JourneyResults/';
-
+const TFL_API_URL = 'https://api.tfl.gov.uk/Journey/JourneyResults';
+const STOPPOINT_URL = 'https://api.tfl.gov.uk/StopPoint';
 const TFL_API_KEY = process.env.TFL_API_KEY;
 
+console.log('Loading: services/tflService.js');
 
+/**
+ * Simple helper to perform a journey request and handle disambiguation responses.
+ */
 const getJourney = async (from, to) => {
-  let journeyUrl = `${TFL_API_URL}/Journey/JourneyResults/${from}/to/${to}`;
+  // Build initial journey URL (TfL expects encoded path segments)
+  let journeyUrl = `${TFL_API_URL}/${encodeURIComponent(from)}/to/${encodeURIComponent(to)}`;
 
   try {
     let response = await fetch(journeyUrl);
     let data = await response.json();
 
-    // Check if the API returned a disambiguation result
-    if (data && data.$type && data.$type.includes('DisambiguationResult')) {
-      // --- Handle 'from' location ambiguity ---
+    // If TfL returns a DisambiguationResult, refine the from/to parameters and call again
+    if (data && data.$type && String(data.$type).includes('DisambiguationResult')) {
+      // Resolve 'from' ambiguity (prefer StopPoint)
       let fromId = from;
       if (data.fromLocationDisambiguation && data.fromLocationDisambiguation.disambiguationOptions) {
-        // Find the best match, prioritizing stations
-        const fromOption = data.fromLocationDisambiguation.disambiguationOptions.find(o => o.place.placeType === 'StopPoint') || data.fromLocationDisambiguation.disambiguationOptions[0];
-        if (fromOption) {
-          fromId = fromOption.parameterValue;
-        }
+        const fromOption =
+          data.fromLocationDisambiguation.disambiguationOptions.find(o => o.place && o.place.placeType === 'StopPoint') ||
+          data.fromLocationDisambiguation.disambiguationOptions[0];
+        if (fromOption && fromOption.parameterValue) fromId = fromOption.parameterValue;
       }
 
-      // --- Handle 'to' location ambiguity ---
+      // Resolve 'to' ambiguity (prefer StopPoint)
       let toId = to;
       if (data.toLocationDisambiguation && data.toLocationDisambiguation.disambiguationOptions) {
-        // Find the best match, prioritizing stations
-        const toOption = data.toLocationDisambiguation.disambiguationOptions.find(o => o.place.placeType === 'StopPoint') || data.toLocationDisambiguation.disambiguationOptions[0];
-        if (toOption) {
-          toId = toOption.parameterValue;
-        }
+        const toOption =
+          data.toLocationDisambiguation.disambiguationOptions.find(o => o.place && o.place.placeType === 'StopPoint') ||
+          data.toLocationDisambiguation.disambiguationOptions[0];
+        if (toOption && toOption.parameterValue) toId = toOption.parameterValue;
       }
 
-      // --- Make the second, more specific API call ---
+      // Second, more specific API call
       console.log(`Disambiguation required. New call with From ID: ${fromId}, To ID: ${toId}`);
-      journeyUrl = `${TFL_API_URL}/Journey/JourneyResults/${fromId}/to/${toId}`;
+      journeyUrl = `${TFL_API_URL}/${encodeURIComponent(fromId)}/to/${encodeURIComponent(toId)}`;
       response = await fetch(journeyUrl);
       data = await response.json();
     }
 
     return data;
-
   } catch (error) {
     console.error('Error fetching journey from TfL API:', error);
     throw new Error('Failed to fetch journey from TfL API');
   }
 };
 
+/**
+ * Fetch station location for a given naptanId.
+ */
 const getStationLocation = async (naptanId) => {
-  URL = https://api.tfl.gov.uk/StopPoint/
+  if (!naptanId) throw new Error('naptanId is required');
 
-  URL = URL + NaptanId + '?app_key='
+  const fullURL = `${STOPPOINT_URL}/${encodeURIComponent(naptanId)}?app_key=${encodeURIComponent(TFL_API_KEY || '')}`;
 
-  const params = new URLSearchParams({
-    app_key: TFL_API_KEY,
-  });
-
-  const fullURL = `${URL}?${params.toString()}`;
-
-  fetch(fullURL)
-  .then(response => {
-    if (response.ok) {
-      return response.json();
+  try {
+    const response = await fetch(fullURL);
+    if (!response.ok) {
+      throw new Error(`Station request failed with status ${response.status}`);
     }
-    throw new Error('Station Request failed!');
-  }, networkError => {
-    console.log(networkError.message)
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching station location:', error);
+    throw error;
   }
+};
 
-)
-
-  }
-
-
-const TFLAPICall = async (from, to, time, date) => {
- 
-  // implement if statement that separates 300 response and action from 200 response
-  // and action
- 
+/**
+ * Top-level TFL API call wrapper used elsewhere in your code.
+ * Returns an object { status, data } to make response handling explicit.
+ */
+const TFLAPICall = async (from, to, time, date, mode = 'tube') => {
+  // Build base URL and params
   const URL = `${TFL_API_URL}/${encodeURIComponent(from)}/to/${encodeURIComponent(to)}`;
 
   const params = new URLSearchParams({
-    app_key: TFL_API_KEY,
-    mode: 'tube'
+    app_key: TFL_API_KEY || '',
+    mode,
   });
 
   if (date) params.append('date', date);
@@ -93,29 +89,29 @@ const TFLAPICall = async (from, to, time, date) => {
   if (date && time) params.append('timeIs', 'Departing');
 
   const fullURL = `${URL}?${params.toString()}`;
-  
+
   console.log('Fetching from TFL:', fullURL);
 
   try {
     const response = await fetch(fullURL);
     const responseText = await response.text();
 
-    if (response.status === 200) {
-       
-      const data = JSON.parse(responseText);
-
-      return {
-      status: response.status,
-      data: data
-    };
+    let parsed = null;
+    try {
+      parsed = responseText ? JSON.parse(responseText) : null;
+    } catch (parseError) {
+      // parsing failed — keep parsed null and continue
+      console.warn('Failed to parse TFL response as JSON:', parseError);
     }
-    
-    console.log('TFL Response Status:', response.status);
-    
+
+    return {
+      status: response.status,
+      data: parsed,
+    };
   } catch (error) {
     console.error('Error fetching journey:', error);
     throw error;
   }
-}
+};
 
-export { getStopPoints, TFLAPICall, getStationLocation };
+export { TFLAPICall, getStationLocation, getJourney };

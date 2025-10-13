@@ -20,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 // --- Serve Frontend ---
 // This must come before the API routes
 app.use(express.static(path.join(__dirname, 'frontend', 'public')));
+app.use('/src', express.static(path.join(__dirname, 'frontend', 'src')));
 
 // --- API Routes ---
 app.use('/api', apiRouter);
