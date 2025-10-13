@@ -7,12 +7,6 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const date = 20251007
-const from = 1000129
-const to = 1000013
-const time = '1700'
-const type = 'stationSelect';
-
 const stationInfoBundler = (commonName, naptanId, lat, lon) => {
   return {
     commonName: commonName,
@@ -21,69 +15,6 @@ const stationInfoBundler = (commonName, naptanId, lat, lon) => {
     naptanId: naptanId,
   }
 }
-
-// Corrected indentation + minor clarity comments
-const getJourney = async (req, res) => {
-  try {
-    // call TFL service (assumes from, to, time, date, type are available in scope)
-    let data = await tflService.TFLAPICall(from, to, time, date, type);
-    data = data.data;
-
-    const allStops = [];
-
-    // assemble stops: departure -> intermediate stops -> arrival
-    const leg = data.journeys[0].legs[0];
-    const departurePoint = leg.departurePoint;
-    allStops.push(departurePoint);
-
-    const intermediateStops = leg.path.stopPoints;
-    intermediateStops.pop(); // drop final stop (arrival) from path.stopPoints
-    intermediateStops.forEach((stop) => allStops.push(stop));
-
-    const arrivalPoint = leg.arrivalPoint;
-    allStops.push(arrivalPoint);
-
-    const assembledJourney = [];
-
-    // normalize station info and build assembledJourney
-    allStops.forEach((station) => {
-      let commonName;
-      let naptanId;
-      let lat;
-      let lon;
-
-      // check for available identifiers/names
-      if (
-        (station.commonName && (station.id || station.naptanId)) ||
-        (station.name && station.id)
-      ) {
-        commonName = station.commonName || station.name;
-        naptanId = station.id || station.naptanId;
-
-        if (station.lat && station.lon) {
-          lat = station.lat;
-          lon = station.lon;
-        } else {
-          // fallback to fetching location by naptanId (assumed synchronous here)
-          const fetchedStationLocation = getStationLocation(naptanId);
-          lat = fetchedStationLocation.lat;
-          lon = fetchedStationLocation.lon;
-        }
-
-        assembledJourney.push(
-          stationInfoBundler(commonName, naptanId, lat, lon)
-        );
-      }
-    });
-
-    return res.json(assembledJourney);
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: 'Error fetching journey', error: error.message });
-  }
-};
-
 
 const getStations = async (req, res) => {
   try {
@@ -116,11 +47,47 @@ const getJourneyWithAI = async (req, res) => {
 
     const journey = journeyData.journeys[0];
 
+    // Assemble the journey for the map
+    const allStops = [];
+    const leg = journey.legs[0];
+    const departurePoint = leg.departurePoint;
+    allStops.push(departurePoint);
+
+    const intermediateStops = leg.path.stopPoints;
+    intermediateStops.pop();
+    intermediateStops.forEach((stop) => allStops.push(stop));
+
+    const arrivalPoint = leg.arrivalPoint;
+    allStops.push(arrivalPoint);
+
+    const assembledJourney = [];
+    for (const station of allStops) {
+        let commonName;
+        let naptanId;
+        let lat;
+        let lon;
+
+        if ((station.commonName && (station.id || station.naptanId)) || (station.name && station.id)) {
+            commonName = station.commonName || station.name;
+            naptanId = station.id || station.naptanId;
+
+            if (station.lat && station.lon) {
+                lat = station.lat;
+                lon = station.lon;
+            } else {
+                const fetchedStationLocation = await tflService.getStationLocation(naptanId);
+                lat = fetchedStationLocation.lat;
+                lon = fetchedStationLocation.lon;
+            }
+            assembledJourney.push(stationInfoBundler(commonName, naptanId, lat, lon));
+        }
+    }
+
     // 2. Get destination coordinates and find nearby places.
     const destination = journey.legs[journey.legs.length - 1].arrivalPoint;
-    const { lat, lon } = destination;
-    console.log(`Fetching nearby places for destination: ${destination.commonName} (${lat}, ${lon})`);
-    const nearbyPlaces = await googleMapsService.getNearbyPlaces(lat, lon);
+    const { lat: destLat, lon: destLon } = destination;
+    console.log(`Fetching nearby places for destination: ${destination.commonName} (${destLat}, ${destLon})`);
+    const nearbyPlaces = await googleMapsService.getNearbyPlaces(destLat, destLon);
     console.log('Found nearby places:', nearbyPlaces.map(p => p.name));
 
     // 3. Create a rich prompt for OpenAI.
@@ -154,7 +121,7 @@ const getJourneyWithAI = async (req, res) => {
     console.log('OpenAI Response:', summary);
 
     // 5. Return the final itinerary to the user.
-    res.json({ summary });
+    res.json({ summary, journey: assembledJourney });
 
   } catch (error) {
     console.error('--- ERROR in getJourneyWithAI ---');
@@ -165,7 +132,5 @@ const getJourneyWithAI = async (req, res) => {
 
 export {
   getStations,
-  getJourney,
   getJourneyWithAI,
 };
-

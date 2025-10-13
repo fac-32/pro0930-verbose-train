@@ -4,7 +4,7 @@ const router = express.Router();
 import { getExampleData } from '../controllers/exampleController.js';
 import { getOpenAIResponse } from '../controllers/openaicontroller.js';
 
-import { getJourney, getJourneyWithAI, getStations } from '../controllers/tflController.js';
+import { getJourneyWithAI, getStations } from '../controllers/tflController.js';
 
 // Define a sample route
 router.get('/hello', getExampleData);
@@ -14,9 +14,7 @@ router.post('/openai', getOpenAIResponse);
 
 // Routes for TfL
 // router.get('/tfl/stoppoints', getStopPoints);
-router.get('/tfl/journey', getJourney);
 router.get('/tfl/journey-with-ai', getJourneyWithAI);
-router.get('/tfl/journey/', getJourney);
 router.get('tfl/stations', getStations)
 
 

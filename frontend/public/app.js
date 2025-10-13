@@ -10,7 +10,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const journeyResponseContainer = document.getElementById('journey-response-container');
     const journeyLoader = document.getElementById('journey-loader');
 
-    const fetchAndDisplay = async (url, options, loaderElement, responseElement, buttonElement, processData) => {
+    // Initialize the map
+    const map = L.map('map').setView([51.505, -0.09], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+    let journeyLayerGroup = L.layerGroup().addTo(map);
+
+    const displayJourneyOnMap = (journeyData) => {
+        journeyLayerGroup.clearLayers();
+
+        if (journeyData && journeyData.length > 0) {
+            const latLngs = journeyData.map(point => [point.lat, point.lon]);
+            const polyline = L.polyline(latLngs, { color: 'var(--primary-color)' }).addTo(journeyLayerGroup);
+            map.fitBounds(polyline.getBounds());
+
+            // Add markers for start and end points
+            const startPoint = journeyData[0];
+            const endPoint = journeyData[journeyData.length - 1];
+            L.marker([startPoint.lat, startPoint.lon]).addTo(journeyLayerGroup)
+                .bindPopup(`<b>Start:</b> ${startPoint.commonName}`)
+                .openPopup();
+            L.marker([endPoint.lat, endPoint.lon]).addTo(journeyLayerGroup)
+                .bindPopup(`<b>End:</b> ${endPoint.commonName}`);
+        }
+    };
+
+    const fetchAndDisplay = async (url, options, loaderElement, responseElement, buttonElement, processData, postFetchCallback) => {
         loaderElement.style.display = 'block';
         responseElement.textContent = '';
         buttonElement.disabled = true;
@@ -25,6 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             const message = processData(data);
             responseElement.textContent = message;
+
+            if (postFetchCallback) {
+                postFetchCallback(data);
+            }
         } catch (error) {
             responseElement.textContent = error.message;
             responseElement.style.color = 'red';
@@ -72,7 +103,12 @@ document.addEventListener('DOMContentLoaded', () => {
             journeyLoader,
             journeyResponseContainer,
             submitJourneyButton,
-            (data) => data.summary
+            (data) => data.summary,
+            (data) => {
+                if (data.journey) {
+                    displayJourneyOnMap(data.journey);
+                }
+            }
         );
     });
 });
