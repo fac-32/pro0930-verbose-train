@@ -1,5 +1,5 @@
 console.log('Loading: controllers/tflController.js');
-import * as tflService from '../services/tflService.js';
+import * as tflService from '../services/tflservice.js';
 import googleMapsService from '../services/googleMapsService.js';
 import OpenAI from 'openai';
 
@@ -7,7 +7,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-
+//justin code
 const date = 20251007
 const from = 1000129
 const to = 1000013
@@ -90,7 +90,7 @@ const getStations = async (req, res) => {
     res.status(500).json({ message: 'Error fetching journey', error: error.message });
   }
 }
-
+//tania code
 const getJourneyWithAI = async (req, res) => {
   console.log('--- Received request for AI journey summary ---');
   try {
@@ -158,11 +158,28 @@ const getJourneyWithAI = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Error fetching journey with AI summary', error: error.message });
   }
+}
+
+//--------------------------------------
+// Ivon's code: Station Suggestions (TFL 300 response)
+//--------------------------------------
+
+const suggestStations = async (req, res) => {
+  const { stationName } = req.body; // Reads "user station's name input" from the request body
+  try {
+    const suggestions = await tflService.getStationSuggestions(stationName, false); // flag to set to false for real API
+    res.json({ suggestions }); // Sends suggestions back to the client
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching station suggestions', error: error.message });
+  }
 };
 
+
+
 export {
-  getStations,
-  getJourney,
-  getJourneyWithAI,
+  getStations,//justin code
+  getJourney,//justin code
+  getJourneyWithAI,//tania code
+  suggestStations, // added export for suggestStations
 };
 

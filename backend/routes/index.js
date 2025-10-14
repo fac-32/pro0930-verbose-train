@@ -8,7 +8,7 @@ import {
     //    getStopPoints, 
     getJourney, 
     getJourneyWithAI, 
-    getStations} from '../controllers/tflController.js';
+    getStations, suggestStations} from '../controllers/tflController.js'; // added import for suggestStations 
 
 
 // Define a sample route
@@ -24,6 +24,6 @@ router.post('/openai', getOpenAIResponse);
 router.get('/tfl/journey-with-ai', getJourneyWithAI);
 router.get('/tfl/journey/:from/to/:to', getJourney);
 router.get('tfl/stations', getStations)
+router.post('/api/suggest-stations', suggestStations);
 
-
-export default router;
+export default router; 
