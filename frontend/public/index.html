@@ -16,6 +16,52 @@
             <span>🛠️</span>
             <span>👷</span>
         </div>
+     <!-- Journey Search Container -->
+    <div class="container" id="journey-search">
+        <h2>Journey Planner</h2>
+        <!-- Input group for stations -->
+        <div class="input-group">
+            <div class="station-input left">
+                <label for="start-station">From:</label>
+                <input 
+                    type="text" 
+                    id="start-station" 
+                    name="start-station" 
+                    placeholder="Enter starting station"
+                    aria-label="Starting station"
+                    required
+                >
+            </div>
+            <div class="arrow">⬇️</div>
+            
+            <div class="station-input right">
+                <label for="end-station">To:</label>
+                <input 
+                    type="text" 
+                    id="end-station" 
+                    name="end-station" 
+                    placeholder="Enter destination station"
+                    aria-label="Destination station"
+                    //attibute from validation
+                    required
+                >
+            </div>
+        </div>
+
+        <!-- Search button -->
+        <button id="search-journey" class="search-btn">Search Journey</button>
+
+        
+
+        <!-- Results containers -->
+        <div id="journey-results" class="results-container">
+            <!-- Journey details will be displayed here -->
+        </div>
+        <div id="journey-error" class="error-container">
+            <!-- Error messages will be displayed here -->
+        </div>
+    </div>
+
     </div>
     <div class="container" id="ai-container">
         <h2>OpenAI Interaction</h2>

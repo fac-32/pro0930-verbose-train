@@ -3,13 +3,7 @@ import express from 'express';
 const router = express.Router();
 import { getExampleData } from '../controllers/exampleController.js';
 import { getOpenAIResponse } from '../controllers/openaicontroller.js';
-import { 
-    //    was causing build error, no longer a function by this name
-    //    getStopPoints, 
-    getJourney, 
-    getJourneyWithAI, 
-    getStations} from '../controllers/tflController.js';
-
+import { getJourney, getStations } from '../controllers/tflController.js';
 
 // Define a sample route
 router.get('/hello', getExampleData);

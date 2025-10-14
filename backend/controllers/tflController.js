@@ -158,7 +158,7 @@ const getJourneyWithAI = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Error fetching journey with AI summary', error: error.message });
   }
-};
+}
 
 export {
   getStations,
