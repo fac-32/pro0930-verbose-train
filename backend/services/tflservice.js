@@ -168,6 +168,7 @@ export async function getStationSuggestions(stationName, simulate = false) {
   try {
     // Use Justin's variable names and node-fetch
     // const url = `${TFL_API_URL}/${encodeURIComponent(stationName)}?app_key=${TFL_API_KEY}&mode=tube`; // this is not the right API to suggest stations
+    console.log('Searching stations for:', stationName);
     const url = `https://api.tfl.gov.uk/StopPoint/Search/${encodeURIComponent(stationName)}?app_key=${TFL_API_KEY}`;
     const response = await fetch(url);
     const data = await response.json();

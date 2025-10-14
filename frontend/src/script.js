@@ -108,7 +108,11 @@ async function handleFuzzySearch(inputElement, searchTerm) {
 
     try {
         // Make API call to your backend
-        const response = await fetch(`http://localhost:3000/api/stations/search?term=${encodeURIComponent(searchTerm)}`);
+        const response = await fetch(`/api/api/suggest-stations`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ stationName: searchTerm }),
+        });
         if (!response.ok) throw new Error('Search failed');
 
         const suggestions = await response.json();
