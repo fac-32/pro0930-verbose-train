@@ -56,6 +56,9 @@ h2 {
     color: var(--secondary-color);
     font-size: 1.8rem;
     margin-top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 p {
@@ -140,4 +143,102 @@ p {
     margin-top: 1.5rem;
     border-radius: 5px;
     border: 1px solid var(--light-gray);
+}
+
+/* --- Chatbot Styles --- */
+
+.hidden {
+    display: none !important;
+}
+
+#chatbot-toggle-button {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--secondary-color);
+    color: white;
+    font-size: 2rem;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#chatbot-popup {
+    position: fixed;
+    bottom: 6.5rem;
+    right: 2rem;
+    width: 400px; /* Original width */
+    max-width: 90vw;
+    z-index: 999;
+}
+
+#close-chatbot-button {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--light-gray);
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+#close-chatbot-button:hover {
+    color: var(--text-color);
+    transform: none;
+}
+
+.chat-window {
+    height: 200px; /* Half height */
+    border: 1px solid var(--light-gray);
+    border-radius: 5px;
+    padding: 1rem;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.chat-input-container {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#chat-input {
+    flex-grow: 1;
+}
+
+#send-chat-button {
+    padding: 0.8rem 1rem;
+}
+
+.chat-message {
+    padding: 0.75rem 1rem;
+    border-radius: 15px;
+    max-width: 80%;
+    line-height: 1.4;
+    white-space: pre-wrap;
+}
+
+.user-message {
+    background-color: var(--primary-color);
+    color: white;
+    border-bottom-right-radius: 3px;
+    align-self: flex-end;
+}
+
+.bot-message {
+    background-color: #f1f0f0;
+    color: var(--text-color);
+    border-bottom-left-radius: 3px;
+    align-self: flex-start;
 }

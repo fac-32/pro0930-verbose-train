@@ -27,17 +27,30 @@
                 <div id="journey-response-container" class="response-container"></div>
             </div>
         </div>
-        <div class="column" id="ai-column">
-            <div class="container" id="ai-container">
-                <h2>OpenAI Interaction</h2>
-                <p>Ask the AI anything.</p>
-                <textarea id="prompt-input" rows="4" placeholder="Enter your prompt here..."></textarea>
-                <button id="submit-prompt">Get AI Response</button>
-                <div class="loader" id="loader"></div>
-                <div id="response-container" class="response-container"></div>
-            </div>
-        </div>
     </main>
+
+    <!-- Chatbot Popup -->
+    <div id="chatbot-popup" class="chatbot-popup hidden">
+        <div class="container" id="ai-container">
+            <h2>
+                Chat with our AI
+                <button id="close-chatbot-button">&times;</button>
+            </h2>
+            <p>Your AI-powered travel assistant.</p>
+            <div class="chat-window" id="chat-window">
+                <!-- Chat messages will appear here -->
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Ask for travel ideas...">
+                <button id="send-chat-button">Send</button>
+            </div>
+            <div class="loader" id="loader"></div>
+        </div>
+    </div>
+
+    <!-- Chatbot Toggle Button -->
+    <button id="chatbot-toggle-button">🤖</button>
+
     <script src="app.js"></script>
 </body>
 </html>
