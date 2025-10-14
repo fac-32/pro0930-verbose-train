@@ -1,4 +1,4 @@
-console.log('Loading: services/tflService.js');
+console.log('Loading: services/tflservice.js');
 // Import dotenv to load environment variables from .env file
 import dotenv from 'dotenv';
 // Load environment variables
@@ -108,18 +108,36 @@ const TFLAPICall = async (from, to, time, date) => {
     const response = await fetch(fullURL);
     const responseText = await response.text();
 
-    if (response.status === 200) {
+    // if (response.status === 200) {
        
-      const data = JSON.parse(responseText);
+    //   const data = JSON.parse(responseText);
 
-      return {
-      status: response.status,
-      data: data
-    };
+    //   return {
+    //   status: response.status,
+    //   data: data
+    // };
+    // }
+    
+    // console.log('TFL Response Status:', response.status);
+    
+    let data; //Controllers can check status === 300 etc. reliably and process data. This prevents undefined responses and runtime crashes.
+
+    try {
+      data = JSON.parse(responseText);
+    } catch (err) {
+      // fallback: keep raw text if JSON parse fails
+      data = responseText;
     }
-    
+
     console.log('TFL Response Status:', response.status);
-    
+
+    // Always return status + parsed data so callers can branch on status
+    return {
+      status: response.status,
+      data
+    };
+
+
   } catch (error) {
     console.error('Error fetching journey:', error);
     throw error;
@@ -194,7 +212,7 @@ export async function getStationSuggestions(stationName, simulate = false) {
 //exports
 export { 
 
-getJourney,
+//getJourney,
 TFLAPICall,
 getStationLocation
 
