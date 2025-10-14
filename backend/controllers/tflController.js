@@ -1,5 +1,5 @@
 console.log('Loading: controllers/tflController.js');
-import * as tflService from '../services/tflservice.js';
+import * as tflservice from '../services/tflservice.js';
 import googleMapsService from '../services/googleMapsService.js';
 import OpenAI from 'openai';
 
@@ -25,7 +25,7 @@ const stationInfoBundler = (commonName, naptanId, lat, lon) => {
 
 const getJourney = async (req, res) => {
   try {
-    let data = await tflService.TFLAPICall(from, to, time, date, type);
+    let data = await tflservice.TFLAPICall(from, to, time, date, type);
     console.log(data);
     data = data.data
 
@@ -65,7 +65,7 @@ for (const station of allStops) {
     
     } else {
       
-      const fetchedStationLocation = await tflService.getStationLocation(naptanId);
+      const fetchedStationLocation = await tflservice.getStationLocation(naptanId);
       console.log(fetchedStationLocation);
       lat = fetchedStationLocation.lat;
       lon = fetchedStationLocation.lon;
@@ -84,7 +84,7 @@ res.json(assembledJourney);
 
 const getStations = async (req, res) => {
   try {
-    const data = await tflService.TFLAPICall(from, to, time, date, type);
+    const data = await tflservice.TFLAPICall(from, to, time, date, type);
     res.json(data);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching journey', error: error.message });
@@ -103,7 +103,7 @@ const getJourneyWithAI = async (req, res) => {
 
     // 1. Get journey information from the TFL API.
     console.log('Fetching journey data from TFL...');
-    const journeyData = await tflService.getJourney(from, to);
+    const journeyData = await tflservice.getJourney(from, to);
     console.log('TFL API Response received.');
 
     if (!journeyData.journeys || journeyData.journeys.length === 0) {
@@ -167,7 +167,7 @@ const getJourneyWithAI = async (req, res) => {
 const suggestStations = async (req, res) => {
   const { stationName } = req.body; // Reads "user station's name input" from the request body
   try {
-    const suggestions = await tflService.getStationSuggestions(stationName, false); // flag to set to false for real API
+    const suggestions = await tflservice.getStationSuggestions(stationName, false); // flag to set to false for real API
     res.json({ suggestions }); // Sends suggestions back to the client
   } catch (error) {
     res.status(500).json({ message: 'Error fetching station suggestions', error: error.message });
