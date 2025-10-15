@@ -1,3 +1,6 @@
+import { startTrainAnimation } from './train-loader.js';
+startTrainAnimation('train-loader');
+
 document.getElementById('submit-journey-search').addEventListener('click', () => {
     console.log('button clicked');
 
@@ -36,8 +39,6 @@ function appendDisplayChild (parentId, childId, textContent) {
     parentEl.appendChild(childP);
 }
 
-import { startTrainAnimation } from './train-loader.js';
-startTrainAnimation('train-loader');
 
 document.addEventListener('DOMContentLoaded', () => {
   const promptInput = document.getElementById('prompt-input');
