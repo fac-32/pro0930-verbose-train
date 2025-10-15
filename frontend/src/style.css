@@ -108,3 +108,31 @@ canvas {
     font-size: 2em;
     margin: 0 0.2em;
 }
+
+#emoji-loader {
+    width: 60vw;
+    /* height: 10vh; */
+    min-height: 3em;
+    border: 2px solid var(--accent);
+    margin-top: 1%;
+}
+
+#slide-loader {
+    display: inline-block;
+    animation: slide-between 1s linear infinite alternate;
+}
+
+@keyframes slide-between {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(300%); }
+}
+
+#spin-loader {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
