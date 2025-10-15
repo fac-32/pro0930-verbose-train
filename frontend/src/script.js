@@ -107,21 +107,33 @@ async function handleFuzzySearch(inputElement, searchTerm) {
         if (existingDropdown) existingDropdown.remove();
         return;
     }
-    const startValue = startInput.value.trim().length;
-    const endValue = endInput.value.trim().length;
+    const startValue = startInput.value.trim();
+    const endValue = endInput.value.trim();
     const minChars = 2;
     
-    if (startValue < minChars || endValue < minChars) {
+    if (startValue.length < minChars || endValue.length < minChars) {
       console.log('debug log, user input fail check before fetching');
       return;
     }
 
     try {
         // Make API call to your backend
-        const response = await fetch(`/api/api/suggest-stations`, {
+        const response = await fetch(`/api/suggest-stations`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ stationName: searchTerm }),
+            // this is what we want inside the body,
+            // inside the curly brackets
+            // so you need to make some changes, to match the format
+            // and send the information we get from the two input
+            // [
+            //   { name: 'Oxford Circus Underground Station' },
+            //   { name: 'Victoria Underground Station' }
+            // ]
+            body: JSON.stringify([
+              { name: startValue },
+              { name: endValue}
+            ]),
+
         });
         if (!response.ok) throw new Error('Search failed');
 
@@ -167,6 +179,9 @@ function showSuggestions(inputElement, suggestions) {
 
 // Create debounced version of search function
 const debouncedSearch = debounce(handleFuzzySearch, 1000); // 1 second delay
+
+// this part below needs rework
+// now that we need to send off both stations for the server to return station name suggestions
 
 // Add input event listeners to both station inputs
 [startInput, endInput].forEach(input => {
