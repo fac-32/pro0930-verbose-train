@@ -1,3 +1,6 @@
+import { startTrainAnimation } from './train-loader.js';
+startTrainAnimation('train-loader');
+
 document.getElementById('submit-journey-search').addEventListener('click', () => {
     console.log('button clicked');
 
@@ -35,6 +38,7 @@ function appendDisplayChild (parentId, childId, textContent) {
     parentEl.style.display = 'block';
     parentEl.appendChild(childP);
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const promptInput = document.getElementById('prompt-input');
@@ -157,7 +161,6 @@ const debouncedSearch = debounce(handleFuzzySearch, 1000); // 1 second delay
         debouncedSearch(e.target, searchTerm);
     });
 });
-
 
 // document.addEventListener('DOMContentLoaded', () => {
 //   const stopsInput = document.getElementById('prompt-input');
