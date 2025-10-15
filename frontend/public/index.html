@@ -18,29 +18,10 @@
         </div>
     </main>
 
-    <!-- Chatbot Popup -->
-    <div id="chatbot-popup" class="chatbot-popup hidden">
-        <div class="container" id="ai-container">
-            <h2>
-                Chat with our AI
-                <button id="close-chatbot-button">&times;</button>
-            </h2>
-            <p>Your AI-powered travel assistant.</p>
-            <div class="chat-window" id="chat-window">
-                <!-- Chat messages will appear here -->
-            </div>
-            <div class="chat-input-container">
-                <input type="text" id="chat-input" placeholder="Ask for travel ideas...">
-                <button id="send-chat-button">Send</button>
-            </div>
-            <div class="loader" id="loader"></div>
-        </div>
-    </div>
-
-    <!-- Chatbot Toggle Button -->
-    <button id="chatbot-toggle-button">🤖</button>
+    <chat-bot></chat-bot>
 
     <script src="/src/components/JourneyPlanner.js"></script>
+    <script src="/src/components/ChatBot.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
