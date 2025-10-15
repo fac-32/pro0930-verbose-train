@@ -66,7 +66,7 @@ This document outlines suggestions for improving the Verbose Train application, 
 **Suggestion:** The `app.js` file has two large, similar-looking event listeners. This code can be refactored to be more reusable.
 **Action:** Create a generic `fetchAndDisplay` function that takes the API endpoint, the request body, and the target container as arguments. This would reduce code duplication.
 
-### ❌ 3.3. Sanitize HTML Output
+### ✅ 3.3. Sanitize HTML Output
 
 **Suggestion:** The response from the OpenAI API is inserted directly into the DOM using `innerHTML`.
 **Reasoning:** While not a high risk now, this can be a security vulnerability (Cross-Site Scripting or XSS) if the API response were ever to contain malicious HTML. It's good practice to sanitize this. A simple fix is to insert the content as text instead of HTML.
