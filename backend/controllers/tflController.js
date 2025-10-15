@@ -165,17 +165,8 @@ const getJourneyWithAI = async (req, res) => {
 //--------------------------------------
 
 const suggestStations = async (req, res) => {
-  console.log('suggest station');
-  console.log(req.body);
-
   const stationName = req.body; // Reads "user station's name input" from the request body
-  // const { stationName } = [
-  //     { name: 'Oxford Circus Underground Station' },
-  //     { name: 'Victoria Underground Station' }
-  //   ]
-  // console.log('Station name received:', stationName);
   try {
-    console.log('try block in tfl controller')
     const suggestions = await tflservice.getStationSuggestions(stationName, false); // flag to set to false for real API
     res.json({ suggestions }); // Sends suggestions back to the client
   } catch (error) {

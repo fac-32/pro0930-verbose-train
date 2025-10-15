@@ -107,38 +107,21 @@ async function handleFuzzySearch(inputElement, searchTerm) {
         if (existingDropdown) existingDropdown.remove();
         return;
     }
-    const startValue = startInput.value.trim();
-    const endValue = endInput.value.trim();
-    const minChars = 2;
     
-    if (startValue.length < minChars || endValue.length < minChars) {
-      console.log('debug log, user input fail check before fetching');
-      return;
-    }
-
     try {
-        // Make API call to your backend
-        const response = await fetch(`/api/suggest-stations`, {
+        fetch(`/api/suggest-stations`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            // this is what we want inside the body,
-            // inside the curly brackets
-            // so you need to make some changes, to match the format
-            // and send the information we get from the two input
-            // [
-            //   { name: 'Oxford Circus Underground Station' },
-            //   { name: 'Victoria Underground Station' }
-            // ]
-            body: JSON.stringify([
-              { name: startValue },
-              { name: endValue}
-            ]),
+            body: JSON.stringify({searchTerm}),
 
-        });
-        if (!response.ok) throw new Error('Search failed');
-
-        const suggestions = await response.json();
-        showSuggestions(inputElement, suggestions);
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('data handling from backend')
+            console.log('before exit then blocks')
+            console.log(data.suggestions);
+            showSuggestions(inputElement, data.suggestions);
+        })
     } catch (error) {
         console.error('Fuzzy search error:', error);
     }
@@ -146,6 +129,7 @@ async function handleFuzzySearch(inputElement, searchTerm) {
 
 // Function to display suggestion dropdown
 function showSuggestions(inputElement, suggestions) {
+    console.log('show suggestions function');
     // Remove existing dropdown if any
     const existingDropdown = inputElement.parentElement.querySelector('.suggestions-dropdown');
     if (existingDropdown) existingDropdown.remove();
@@ -158,9 +142,9 @@ function showSuggestions(inputElement, suggestions) {
     suggestions.forEach(station => {
         const suggestion = document.createElement('div');
         suggestion.className = 'suggestion-item';
-        suggestion.textContent = station.commonName;
+        suggestion.textContent = station.name;
         // Store searchable name as data attribute
-        suggestion.dataset.searchableName = station.searchableName;
+        suggestion.dataset.searchableName = station.id;
         
         // Handle click on suggestion
         suggestion.addEventListener('click', () => {
