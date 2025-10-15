@@ -158,6 +158,7 @@ const TFLAPICall = async (from, to, time, date) => {
  */
 
 export async function getStationSuggestions(stationName, simulate = false) {
+  console.log('get station suggestions');
   if (simulate) {
     // Dummy data for development/testing
     return [
@@ -169,7 +170,19 @@ export async function getStationSuggestions(stationName, simulate = false) {
     // Use Justin's variable names and node-fetch
     // const url = `${TFL_API_URL}/${encodeURIComponent(stationName)}?app_key=${TFL_API_KEY}&mode=tube`; // this is not the right API to suggest stations
     console.log('Searching stations for:', stationName);
-    const url = `https://api.tfl.gov.uk/StopPoint/Search/${encodeURIComponent(stationName)}?app_key=${TFL_API_KEY}`;
+    let searchQuery = ""
+    stationName.forEach((station, i) => {
+      const name = station.name;
+      searchQuery += name;
+      // if (i === 0) {
+      //   searchQuery += ','
+      // }
+    })
+    console.log(searchQuery)
+    
+    // const url = `https://api.tfl.gov.uk/StopPoint/Search/${encodeURIComponent(stationName)}?app_key=${TFL_API_KEY}`;
+    // const url = `https://api.tfl.gov.uk/StopPoint/Search/?query={${searchQuery}}?app_key=${TFL_API_KEY}`;
+    const url = `https://api.tfl.gov.uk/StopPoint/Search/{${searchQuery}}`;
     const response = await fetch(url);
     const data = await response.json();
 
