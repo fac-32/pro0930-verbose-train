@@ -100,6 +100,13 @@ const getJourneyWithAI = async (req, res) => {
     const prompt = `
       You are a helpful travel assistant. Create a fun and user-friendly travel itinerary based on the following data.
 
+      **Instructions for your response:**
+      - Your response must be plain text only. Do not use any Markdown (e.g., no '#', '*', or '**'), HTML, or other formatting.
+      - Format the response in a friendly, conversational tone.
+      - When you refer to a travel stop or station, use the "📍" emoji before the name instead of the word "Stop".
+
+      **Itinerary Details:**
+
       First, provide a simple summary of the travel journey itself.
 
       Then, for each stop in the journey that has a list of nearby places, suggest one or two interesting things to do. Group the suggestions by the station name.

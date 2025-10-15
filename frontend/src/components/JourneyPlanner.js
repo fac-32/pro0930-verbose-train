@@ -56,6 +56,17 @@ journeyPlannerTemplate.innerHTML = `
                 opacity: 1;
             }
         }
+
+        .response-container {
+            display: none; /* Hidden by default */
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: left;
+            white-space: pre-wrap;
+        }
     </style>
     <link rel="stylesheet" href="/src/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -192,6 +203,7 @@ class JourneyPlanner extends HTMLElement {
 
         this.journeyLoader.style.display = 'block';
         this.journeyResponseContainer.innerHTML = '';
+        this.journeyResponseContainer.style.display = 'none';
         this.submitJourneyButton.disabled = true;
 
         try {
@@ -200,12 +212,14 @@ class JourneyPlanner extends HTMLElement {
 
             const data = await response.json();
             this.journeyResponseContainer.textContent = data.summary;
+            this.journeyResponseContainer.style.display = 'block';
             if (data.journey) {
                 this.displayJourneyOnMap(data.journey);
             }
         } catch (error) {
             this.journeyResponseContainer.textContent = error.message;
             this.journeyResponseContainer.style.color = 'red';
+            this.journeyResponseContainer.style.display = 'block';
         } finally {
             this.journeyLoader.style.display = 'none';
             this.submitJourneyButton.disabled = false;
