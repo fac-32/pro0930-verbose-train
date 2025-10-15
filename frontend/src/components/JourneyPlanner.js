@@ -1,8 +1,62 @@
 const journeyPlannerTemplate = document.createElement('template');
-// Note: I've changed IDs to classes to avoid conflicts in the Shadow DOM.
 journeyPlannerTemplate.innerHTML = `
+    <style>
+        :host {
+            --primary-color: #4CAF50;
+            --secondary-color: #2E7D32;
+            --light-gray: #bdc3c7;
+        }
+        .map {
+            height: 400px;
+            margin-top: 1.5rem;
+            border-radius: 5px;
+            border: 1px solid var(--light-gray);
+            background-color: #f0f0f0; /* A fallback background */
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 1.5rem auto;
+            display: none; /* Hidden by default */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* SVG Animation Styles */
+        .journey-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw-path 3s ease-in-out forwards;
+        }
+
+        @keyframes draw-path {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .pitstop-circle {
+            opacity: 0;
+            transform-origin: center;
+            transform: scale(0);
+            animation: pop-in 0.5s ease-out forwards;
+        }
+
+        @keyframes pop-in {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
     <link rel="stylesheet" href="/src/style.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <div class="container">
         <h2>TFL Journey Planner</h2>
         <p>Get an AI-powered summary of your next journey.</p>
@@ -22,6 +76,7 @@ class JourneyPlanner extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.appendChild(journeyPlannerTemplate.content.cloneNode(true));
+        this.journeyData = null;
     }
 
     connectedCallback() {
@@ -32,77 +87,94 @@ class JourneyPlanner extends HTMLElement {
         this.journeyLoader = this.shadowRoot.querySelector('.journey-loader');
         this.mapContainer = this.shadowRoot.querySelector('.map');
 
-        // The Leaflet library (L) is loaded in the main document, so it should be available globally.
         if (typeof L === 'undefined') {
-            console.error('Leaflet library not found. Please make sure it is loaded in the main document.');
+            console.error('Leaflet library not found.');
             return;
         }
 
         this.submitJourneyButton.addEventListener('click', () => this.fetchAndDisplayJourney());
-
-        // We need to initialize the map after the component is in the DOM.
-        // A small delay might be needed for the map container to get its dimensions.
         setTimeout(() => this.initializeMap(), 0);
     }
 
     initializeMap() {
-        // The map container needs a specific height that it's not getting inside the shadow DOM.
-        // Let's add a style tag to fix this for now.
-        const style = document.createElement('style');
-        style.textContent = `
-            .map {
-                height: 400px;
-                margin-top: 1.5rem;
-                border-radius: 5px;
-                border: 1px solid var(--light-gray);
-            }
-            .loader {
-                border: 4px solid #f3f3f3;
-                border-top: 4px solid var(--primary-color);
-                border-radius: 50%;
-                width: 40px;
-                height: 40px;
-                animation: spin 1s linear infinite;
-                margin: 1.5rem auto;
-                display: none; /* Hidden by default */
-            }
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        `;
-        this.shadowRoot.appendChild(style);
-
-
         this.map = L.map(this.mapContainer).setView([51.505, -0.09], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
         }).addTo(this.map);
+        
+        this.svgLayer = L.svg();
+        this.svgLayer.addTo(this.map);
+
         this.journeyLayerGroup = L.layerGroup().addTo(this.map);
+
+        this.map.on('moveend', () => this._drawJourneyPath());
     }
 
     displayJourneyOnMap(journeyData) {
         this.journeyLayerGroup.clearLayers();
-        if (journeyData && journeyData.length > 0) {
-            const latLngs = journeyData.map(point => [point.lat, point.lon]);
-            const polyline = L.polyline(latLngs, { color: 'var(--primary-color)' }).addTo(this.journeyLayerGroup);
-            this.map.fitBounds(polyline.getBounds());
+        if (this.svgLayer && this.svgLayer._container) {
+            this.svgLayer._container.innerHTML = '';
+        }
 
-            const startPoint = journeyData[0];
-            const endPoint = journeyData[journeyData.length - 1];
+        this.journeyData = journeyData;
+
+        if (this.journeyData && this.journeyData.length > 0) {
+            const latLngs = this.journeyData.map(point => [point.lat, point.lon]);
+            const bounds = L.latLngBounds(latLngs);
+            this.map.fitBounds(bounds);
+
+            const startPoint = this.journeyData[0];
+            const endPoint = this.journeyData[this.journeyData.length - 1];
             L.marker([startPoint.lat, startPoint.lon]).addTo(this.journeyLayerGroup)
                 .bindPopup(`<b>Start:</b> ${startPoint.commonName}`)
                 .openPopup();
             L.marker([endPoint.lat, endPoint.lon]).addTo(this.journeyLayerGroup)
                 .bindPopup(`<b>End:</b> ${endPoint.commonName}`);
 
-            // Force the map to re-evaluate its size and redraw.
-            // This often fixes rendering issues in complex layouts or web components.
             setTimeout(() => {
                 this.map.invalidateSize();
-            }, 0);
+                this._drawJourneyPath();
+            }, 100);
         }
+    }
+
+    _drawJourneyPath() {
+        if (!this.journeyData || !this.svgLayer) return;
+
+        const svg = this.svgLayer._container;
+        svg.innerHTML = '';
+
+        const points = this.journeyData.map(p => this.map.latLngToLayerPoint(L.latLng(p.lat, p.lon)));
+        const pathString = points.map((p, i) => (i === 0 ? 'M' : 'L') + `${p.x} ${p.y}`).join(' ');
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathString);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', 'var(--primary-color)');
+        path.setAttribute('stroke-width', 5);
+
+        svg.appendChild(path);
+
+        const length = path.getTotalLength();
+        path.style.strokeDasharray = length;
+        path.style.strokeDashoffset = length;
+        path.classList.add('journey-path');
+
+        this.journeyData.forEach((point, index) => {
+            const p = this.map.latLngToLayerPoint(L.latLng(point.lat, point.lon));
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            
+            circle.setAttribute('cx', p.x);
+            circle.setAttribute('cy', p.y);
+            circle.setAttribute('r', 5);
+            circle.setAttribute('fill', 'var(--primary-color)');
+            
+            circle.classList.add('pitstop-circle');
+            circle.style.animationDelay = `${0.5 + index * 0.1}s`; 
+
+            svg.appendChild(circle);
+        });
     }
 
     async fetchAndDisplayJourney() {

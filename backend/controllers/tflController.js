@@ -47,48 +47,54 @@ const getJourneyWithAI = async (req, res) => {
 
     const journey = journeyData.journeys[0];
 
-    // Assemble the journey for the map
-    const allStops = [];
-    const leg = journey.legs[0];
-    const departurePoint = leg.departurePoint;
-    allStops.push(departurePoint);
+    // Assemble the journey for the map, ensuring no duplicates.
+    const allStopsRaw = [];
+    journey.legs.forEach(leg => {
+        allStopsRaw.push(leg.departurePoint);
+        if (leg.path && leg.path.stopPoints) {
+            leg.path.stopPoints.forEach(stop => allStopsRaw.push(stop));
+        }
+        allStopsRaw.push(leg.arrivalPoint);
+    });
 
-    const intermediateStops = leg.path.stopPoints;
-    intermediateStops.pop();
-    intermediateStops.forEach((stop) => allStops.push(stop));
-
-    const arrivalPoint = leg.arrivalPoint;
-    allStops.push(arrivalPoint);
+    const uniqueStations = new Map();
+    allStopsRaw.forEach(station => {
+        const naptanId = station.id || station.naptanId;
+        if (naptanId && !uniqueStations.has(naptanId)) {
+            uniqueStations.set(naptanId, station);
+        }
+    });
 
     const assembledJourney = [];
-    for (const station of allStops) {
-        let commonName;
-        let naptanId;
-        let lat;
-        let lon;
+    for (const station of uniqueStations.values()) {
+        let commonName = station.commonName || station.name;
+        let naptanId = station.id || station.naptanId;
+        let lat, lon;
 
-        if ((station.commonName && (station.id || station.naptanId)) || (station.name && station.id)) {
-            commonName = station.commonName || station.name;
-            naptanId = station.id || station.naptanId;
-
-            if (station.lat && station.lon) {
-                lat = station.lat;
-                lon = station.lon;
-            } else {
-                const fetchedStationLocation = await tflService.getStationLocation(naptanId);
-                lat = fetchedStationLocation.lat;
-                lon = fetchedStationLocation.lon;
-            }
-            assembledJourney.push(stationInfoBundler(commonName, naptanId, lat, lon));
+        if (station.lat && station.lon) {
+            lat = station.lat;
+            lon = station.lon;
+        } else {
+            const fetchedStationLocation = await tflService.getStationLocation(naptanId);
+            lat = fetchedStationLocation.lat;
+            lon = fetchedStationLocation.lon;
         }
+        assembledJourney.push(stationInfoBundler(commonName, naptanId, lat, lon));
     }
 
-    // 2. Get destination coordinates and find nearby places.
-    const destination = journey.legs[journey.legs.length - 1].arrivalPoint;
-    const { lat: destLat, lon: destLon } = destination;
-    console.log(`Fetching nearby places for destination: ${destination.commonName} (${destLat}, ${destLon})`);
-    const nearbyPlaces = await googleMapsService.getNearbyPlaces(destLat, destLon);
-    console.log('Found nearby places:', nearbyPlaces.map(p => p.name));
+    // 2. For each unique stop in the journey, find nearby places.
+    console.log('Fetching nearby places for unique stops in the journey...');
+    const placesPromises = assembledJourney.map(stop => 
+        googleMapsService.getNearbyPlaces(stop.lat, stop.lon)
+    );
+    const placesResults = await Promise.all(placesPromises);
+
+    const allNearbyPlaces = assembledJourney.map((stop, index) => ({
+        stopName: stop.commonName,
+        places: placesResults[index]
+    })).filter(stop => stop.places.length > 0);
+
+    console.log('Found nearby places for stops:', allNearbyPlaces.map(s => s.stopName));
 
     // 3. Create a rich prompt for OpenAI.
     const prompt = `
@@ -96,7 +102,7 @@ const getJourneyWithAI = async (req, res) => {
 
       First, provide a simple summary of the travel journey itself.
 
-      Then, suggest a mini-itinerary of 2-3 things to do at the destination, using the provided list of nearby places. Be creative and group them logically if possible (e.g., "grab a coffee at... and then visit...").
+      Then, for each stop in the journey that has a list of nearby places, suggest one or two interesting things to do. Group the suggestions by the station name.
 
       JOURNEY DATA:
       - From: ${from}
@@ -104,11 +110,9 @@ const getJourneyWithAI = async (req, res) => {
       - Duration: ${journey.duration} minutes
       - Steps: ${JSON.stringify(journey.legs.map(leg => leg.instruction.summary), null, 2)}
 
-      NEARBY PLACES AT DESTINATION (from Google Maps):
-      ${JSON.stringify(nearbyPlaces, null, 2)}
+      NEARBY PLACES FOR EACH STOP (from Google Maps):
+      ${JSON.stringify(allNearbyPlaces, null, 2)}
     `;
-    console.log('--- OpenAI Prompt (Rich) ---');
-    console.log(prompt);
 
     // 4. Send prompt to OpenAI.
     console.log('Sending rich prompt to OpenAI...');
@@ -118,7 +122,7 @@ const getJourneyWithAI = async (req, res) => {
     });
 
     const summary = completion.choices[0].message.content;
-    console.log('OpenAI Response:', summary);
+    console.log('OpenAI Response received.');
 
     // 5. Return the final itinerary to the user.
     res.json({ summary, journey: assembledJourney });
