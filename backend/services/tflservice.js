@@ -169,20 +169,9 @@ export async function getStationSuggestions(stationName, simulate = false) {
   try {
     // Use Justin's variable names and node-fetch
     // const url = `${TFL_API_URL}/${encodeURIComponent(stationName)}?app_key=${TFL_API_KEY}&mode=tube`; // this is not the right API to suggest stations
-    console.log('Searching stations for:', stationName);
-    let searchQuery = ""
-    stationName.forEach((station, i) => {
-      const name = station.name;
-      searchQuery += name;
-      // if (i === 0) {
-      //   searchQuery += ','
-      // }
-    })
-    console.log(searchQuery)
     
-    // const url = `https://api.tfl.gov.uk/StopPoint/Search/${encodeURIComponent(stationName)}?app_key=${TFL_API_KEY}`;
-    // const url = `https://api.tfl.gov.uk/StopPoint/Search/?query={${searchQuery}}?app_key=${TFL_API_KEY}`;
-    const url = `https://api.tfl.gov.uk/StopPoint/Search/{${searchQuery}}`;
+    // the frontend has tweaked the url to get non-empty responses
+    const url = `https://api.tfl.gov.uk/StopPoint/Search/?query=${stationName.searchTerm}&modes=tube`;
     const response = await fetch(url);
     const data = await response.json();
 
@@ -190,6 +179,23 @@ export async function getStationSuggestions(stationName, simulate = false) {
     console.log('TfL API response status:', response.status);
     console.log('TfL API response data:', data);
 
+    // this part of the logic is added by frontend while trying to hook things up
+    // in case of 200 response, the method will return at the end of the if block
+    if (response.status === 200) {
+        console.log('before exit tfl service')
+        const returnData = data.matches.map(match => {
+            return {
+                name: match.name,
+                id: match.id,
+                icsId : match.icsId,
+                lat: match.lat,
+                lon: match.lon
+            }
+        })
+        console.log(returnData)
+        return returnData;
+    }
+    console.log(error)
 
     // Filter for tube/underground stations only, placeType StopPoint, and use commonName if available
     if (response.status === 200 && Array.isArray(data.matches)) {
