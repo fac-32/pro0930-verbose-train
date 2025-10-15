@@ -9,7 +9,7 @@ chatBotTemplate.innerHTML = `
             --container-background: #FFFFFF;
             --text-color: #333;
             --light-gray: #bdc3c7;
-            --accent-color: #f39cc7; /* Using the new accent color */
+            --accent-color: #FF9800; /* Using the new accent color */
         }
 
         .hidden {
