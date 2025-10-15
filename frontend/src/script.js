@@ -107,6 +107,14 @@ async function handleFuzzySearch(inputElement, searchTerm) {
         if (existingDropdown) existingDropdown.remove();
         return;
     }
+    const startValue = startInput.value.trim().length;
+    const endValue = endInput.value.trim().length;
+    const minChars = 2;
+    
+    if (startValue < minChars || endValue < minChars) {
+      console.log('debug log, user input fail check before fetching');
+      return;
+    }
 
     try {
         // Make API call to your backend
