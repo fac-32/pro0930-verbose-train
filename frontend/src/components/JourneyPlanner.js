@@ -5,6 +5,7 @@ journeyPlannerTemplate.innerHTML = `
             --primary-color: #4CAF50;
             --secondary-color: #2E7D32;
             --light-gray: #bdc3c7;
+            --pitstop-color: #FF9800; /* Orange for pitstops */
         }
         .map {
             height: 400px;
@@ -42,16 +43,17 @@ journeyPlannerTemplate.innerHTML = `
         }
 
         .pitstop-circle {
-            opacity: 0;
-            transform-origin: center;
-            transform: scale(0);
-            animation: pop-in 0.5s ease-out forwards;
+            animation: pop-in-radius 0.5s ease-out forwards;
         }
 
-        @keyframes pop-in {
+        @keyframes pop-in-radius {
+            from {
+                r: 0;
+                opacity: 0;
+            }
             to {
+                r: 5;
                 opacity: 1;
-                transform: scale(1);
             }
         }
     </style>
@@ -161,6 +163,8 @@ class JourneyPlanner extends HTMLElement {
         path.style.strokeDashoffset = length;
         path.classList.add('journey-path');
 
+        const pitstopColor = getComputedStyle(this).getPropertyValue('--pitstop-color').trim() || '#FF9800';
+
         this.journeyData.forEach((point, index) => {
             const p = this.map.latLngToLayerPoint(L.latLng(point.lat, point.lon));
             const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -168,7 +172,7 @@ class JourneyPlanner extends HTMLElement {
             circle.setAttribute('cx', p.x);
             circle.setAttribute('cy', p.y);
             circle.setAttribute('r', 5);
-            circle.setAttribute('fill', 'var(--primary-color)');
+            circle.setAttribute('fill', pitstopColor);
             
             circle.classList.add('pitstop-circle');
             circle.style.animationDelay = `${0.5 + index * 0.1}s`; 
