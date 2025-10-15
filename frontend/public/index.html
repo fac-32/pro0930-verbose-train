@@ -14,18 +14,7 @@
     </header>
     <main class="main-container">
         <div class="column" id="journey-column">
-            <div class="container" id="journey-container">
-                <h2>TFL Journey Planner</h2>
-                <p>Get an AI-powered summary of your next journey.</p>
-                <div class="input-group">
-                    <input type="text" id="from-input" placeholder="From...">
-                    <input type="text" id="to-input" placeholder="To...">
-                </div>
-                <button id="submit-journey">Get Journey Summary</button>
-                <div id="map"></div>
-                <div class="loader" id="journey-loader"></div>
-                <div id="journey-response-container" class="response-container"></div>
-            </div>
+            <journey-planner></journey-planner>
         </div>
     </main>
 
@@ -51,6 +40,7 @@
     <!-- Chatbot Toggle Button -->
     <button id="chatbot-toggle-button">🤖</button>
 
+    <script src="/src/components/JourneyPlanner.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
