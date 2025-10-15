@@ -4,7 +4,8 @@
   "description": "A full-stack web application",
   "main": "server.js",
   "scripts": {
-    "start": "node -r dotenv/config server.js"
+    "start": "node -r dotenv/config server.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +17,8 @@
     "node-fetch": "^3.3.2",
     "openai": "^6.1.0"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "jest": "^30.2.0"
+  }
 }
