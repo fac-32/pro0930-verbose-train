@@ -71,9 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const data = await response.json();
       const message = data.message.content;
-      responseContainer.innerHTML = `<p>${message}</p>`;
+      responseContainer.textContent = message;
+      responseContainer.style.color = 'black';
     } catch (error) {
-      responseContainer.innerHTML = `<p style="color: red;">${error.message}</p>`;
+      responseContainer.textContent = error.message;
+      responseContainer.style.color = 'red';
     } finally {
       loader.style.display = 'none';
     }
