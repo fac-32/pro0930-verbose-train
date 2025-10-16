@@ -23,18 +23,12 @@ document.getElementById('search-journey').addEventListener('click', async () => 
         fetch(`api/tfl/journey/${from}/to/${to}`)
         .then(response => response.json())
         .then(data => {
-            console.log('data handling from backend')
-            console.log('before exit then blocks')
-            console.log(data);
+            console.log('search-journey, then block, before data handling')
+            // console.log(data);
             document.getElementById('intro-placeholder').style.display = 'none';
             appendDisplayChild('tfl-display', 'tfl-p', renderJourneyData(data));
             // appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
         })
-        // dummy response
-        // const response = {
-        //     tflJourney: ['Victoria', 'Green Park', 'Oxford Circus'],
-        //     openAiSuggestions: 'Blah blah blah'
-        // };
     } catch (error) {
         console.log(error)
     }
@@ -54,7 +48,6 @@ function appendDisplayChild (parentId, childId, textContent) {
     parentEl.style.display = 'block';
     parentEl.appendChild(childP);
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
   const promptInput = document.getElementById('prompt-input');
@@ -129,9 +122,8 @@ async function handleFuzzySearch(inputElement, searchTerm) {
         })
         .then(response => response.json())
         .then(data => {
-            console.log('data handling from backend')
-            console.log('before exit then blocks')
-            console.log(data.suggestions);
+            // console.log('handle fuzzy search, then block, before data handling')
+            // console.log(data.suggestions);
             showSuggestions(inputElement, data.suggestions);
         })
     } catch (error) {
@@ -175,9 +167,6 @@ function showSuggestions(inputElement, suggestions) {
 
 // Create debounced version of search function
 const debouncedSearch = debounce(handleFuzzySearch, 1000); // 1 second delay
-
-// this part below needs rework
-// now that we need to send off both stations for the server to return station name suggestions
 
 // Add input event listeners to both station inputs
 [startInput, endInput].forEach(input => {
