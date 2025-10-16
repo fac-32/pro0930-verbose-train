@@ -1,7 +1,7 @@
 import { startTrainAnimation } from './train-loader.js';
 startTrainAnimation('train-loader');
 
-document.getElementById('submit-journey-search').addEventListener('click', () => {
+document.getElementById('search-journey').addEventListener('click', async () => {
     console.log('button clicked');
 
     // this is aligned with the input elements
