@@ -17,18 +17,34 @@ document.getElementById('search-journey').addEventListener('click', async () => 
     try {
         // the server should return 1. the whole journey with stops, and 2. the Open ai suggestions
         // presuming the response/data from the server is in an object
-        // const response = await fetch(`/some/server/endpoint/${start}/${end}`);
-        const response = {
-            tflJourney: ['Victoria', 'Green Park', 'Oxford Circus'],
-            openAiSuggestions: 'Blah blah blah'
-        };
-        document.getElementById('intro-placeholder').style.display = 'none';
-        appendDisplayChild('tfl-display', 'tfl-p', response.tflJourney);
-        appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
+        const from = startInput.dataset.searchableName;
+        const to = endInput.dataset.searchableName;
+        console.log(`From: ${from}, To: ${to}`);
+        fetch(`api/tfl/journey/${from}/to/${to}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('data handling from backend')
+            console.log('before exit then blocks')
+            console.log(data);
+            document.getElementById('intro-placeholder').style.display = 'none';
+            appendDisplayChild('tfl-display', 'tfl-p', renderJourneyData(data));
+            // appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
+        })
+        // dummy response
+        // const response = {
+        //     tflJourney: ['Victoria', 'Green Park', 'Oxford Circus'],
+        //     openAiSuggestions: 'Blah blah blah'
+        // };
     } catch (error) {
         console.log(error)
     }
 })
+
+function renderJourneyData(data) {
+    // keep for reference
+    // return data.map(station => `<p>${station.commonName} (${station.naptanId}) - Lat: ${station.lat}, Lon: ${station.lon}</p>`).join('');
+    return data.map(station => station.commonName);
+}
 
 function appendDisplayChild (parentId, childId, textContent) {
     const childP = document.createElement('p');
@@ -144,13 +160,13 @@ function showSuggestions(inputElement, suggestions) {
         suggestion.className = 'suggestion-item';
         suggestion.textContent = station.name;
         // Store searchable name as data attribute
-        suggestion.dataset.searchableName = station.id;
+        suggestion.dataset.searchableName = station.icsId;
         
         // Handle click on suggestion
         suggestion.addEventListener('click', () => {
-            inputElement.value = station.commonName;
+            inputElement.value = station.name;
             // Store searchable name in input's dataset
-            inputElement.dataset.searchableName = station.searchableName;
+            inputElement.dataset.searchableName = station.icsId;
             dropdown.remove();
         });
 
