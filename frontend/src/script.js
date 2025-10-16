@@ -1,34 +1,44 @@
 import { startTrainAnimation } from './train-loader.js';
 startTrainAnimation('train-loader');
 
-document.getElementById('submit-journey-search').addEventListener('click', () => {
+// Get references to the station input elements
+const startInput = document.getElementById('start-station');
+const endInput = document.getElementById('end-station');
+
+document.getElementById('search-journey').addEventListener('click', async () => {
     console.log('button clicked');
 
-    // this is aligned with the input elements
-    // there is no need for a separate validation function given there are only 2 input fields on the frontend
-    // and the value used for validtion will be reused below
-    // const start = document.getElementById('start-station').dataset.searchableName;
-    // const end = document.getElementById('end-station').dataset.searchableName;
-    // if (start === undefined || end === undefined) {
-    //     alert('Please select both a start and end station from the dropdowns.');
-    //     return;
-    // }
+    // validation: check for input on both fields
+    const from = startInput.dataset.searchableName;
+    const to = endInput.dataset.searchableName;
+    if (from === undefined || to === undefined) {
+        alert('Please select both a start and end station from the dropdowns.');
+        return;
+    }
     
     try {
         // the server should return 1. the whole journey with stops, and 2. the Open ai suggestions
         // presuming the response/data from the server is in an object
-        // const response = await fetch(`/some/server/endpoint/${start}/${end}`);
-        const response = {
-            tflJourney: ['Victoria', 'Green Park', 'Oxford Circus'],
-            openAiSuggestions: 'Blah blah blah'
-        };
-        document.getElementById('intro-placeholder').style.display = 'none';
-        appendDisplayChild('tfl-display', 'tfl-p', response.tflJourney);
-        appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
+        console.log(`From: ${from}, To: ${to}`);
+        fetch(`api/tfl/journey/${from}/to/${to}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('search-journey, then block, before data handling')
+            // console.log(data);
+            document.getElementById('intro-placeholder').style.display = 'none';
+            appendDisplayChild('tfl-display', 'tfl-p', renderJourneyData(data));
+            // appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
+        })
     } catch (error) {
         console.log(error)
     }
 })
+
+function renderJourneyData(data) {
+    // keep for reference
+    // return data.map(station => `<p>${station.commonName} (${station.naptanId}) - Lat: ${station.lat}, Lon: ${station.lon}</p>`).join('');
+    return data.map(station => station.commonName);
+}
 
 function appendDisplayChild (parentId, childId, textContent) {
     const childP = document.createElement('p');
@@ -38,7 +48,6 @@ function appendDisplayChild (parentId, childId, textContent) {
     parentEl.style.display = 'block';
     parentEl.appendChild(childP);
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
   const promptInput = document.getElementById('prompt-input');
@@ -81,9 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
-// Get references to the station input elements
-const startInput = document.getElementById('start-station');
-const endInput = document.getElementById('end-station');
+
 
 // Debounce function to prevent excessive API calls
 // This creates a delay between user typing and API call
@@ -107,14 +114,20 @@ async function handleFuzzySearch(inputElement, searchTerm) {
         if (existingDropdown) existingDropdown.remove();
         return;
     }
-
+    
     try {
-        // Make API call to your backend
-        const response = await fetch(`http://localhost:3000/api/stations/search?term=${encodeURIComponent(searchTerm)}`);
-        if (!response.ok) throw new Error('Search failed');
+        fetch(`/api/suggest-stations`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({searchTerm}),
 
-        const suggestions = await response.json();
-        showSuggestions(inputElement, suggestions);
+        })
+        .then(response => response.json())
+        .then(data => {
+            // console.log('handle fuzzy search, then block, before data handling')
+            // console.log(data.suggestions);
+            showSuggestions(inputElement, data.suggestions);
+        })
     } catch (error) {
         console.error('Fuzzy search error:', error);
     }
@@ -122,6 +135,7 @@ async function handleFuzzySearch(inputElement, searchTerm) {
 
 // Function to display suggestion dropdown
 function showSuggestions(inputElement, suggestions) {
+    console.log('show suggestions function');
     // Remove existing dropdown if any
     const existingDropdown = inputElement.parentElement.querySelector('.suggestions-dropdown');
     if (existingDropdown) existingDropdown.remove();
@@ -134,15 +148,15 @@ function showSuggestions(inputElement, suggestions) {
     suggestions.forEach(station => {
         const suggestion = document.createElement('div');
         suggestion.className = 'suggestion-item';
-        suggestion.textContent = station.commonName;
+        suggestion.textContent = station.name;
         // Store searchable name as data attribute
-        suggestion.dataset.searchableName = station.searchableName;
+        suggestion.dataset.searchableName = station.icsId;
         
         // Handle click on suggestion
         suggestion.addEventListener('click', () => {
-            inputElement.value = station.commonName;
+            inputElement.value = station.name;
             // Store searchable name in input's dataset
-            inputElement.dataset.searchableName = station.searchableName;
+            inputElement.dataset.searchableName = station.icsId;
             dropdown.remove();
         });
 

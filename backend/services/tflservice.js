@@ -158,6 +158,7 @@ const TFLAPICall = async (from, to, time, date) => {
  */
 
 export async function getStationSuggestions(stationName, simulate = false) {
+  console.log('get station suggestions');
   if (simulate) {
     // Dummy data for development/testing
     return [
@@ -168,7 +169,9 @@ export async function getStationSuggestions(stationName, simulate = false) {
   try {
     // Use Justin's variable names and node-fetch
     // const url = `${TFL_API_URL}/${encodeURIComponent(stationName)}?app_key=${TFL_API_KEY}&mode=tube`; // this is not the right API to suggest stations
-    const url = `https://api.tfl.gov.uk/StopPoint/Search/${encodeURIComponent(stationName)}?app_key=${TFL_API_KEY}`;
+    
+    // the frontend has tweaked the url to get non-empty responses
+    const url = `https://api.tfl.gov.uk/StopPoint/Search/?query=${stationName.searchTerm}&modes=tube`;
     const response = await fetch(url);
     const data = await response.json();
 
@@ -176,29 +179,24 @@ export async function getStationSuggestions(stationName, simulate = false) {
     console.log('TfL API response status:', response.status);
     console.log('TfL API response data:', data);
 
-
-    // Filter for tube/underground stations only, placeType StopPoint, and use commonName if available
-    if (response.status === 200 && Array.isArray(data.matches)) {
-      // Debug: log each match to inspect properties
-      data.matches.forEach(match => {
-        console.log('name:', match.name);
-        console.log('modes:', match.modes);
-        console.log('type:', match.type);
-        console.log('placeType:', match.placeType);
-      });
-
-      return data.matches
-        .filter(match =>
-          Array.isArray(match.modes) &&
-          match.modes.includes('tube')
-          // Uncomment below if you confirm placeType or type is present and correct
-          // && (match.placeType === 'StopPoint' || match.type === 'StopPoint')
-        )
-        .map(match => ({
-          name: match.commonName || match.name
-        }));
+    // this part of the logic is added by frontend while trying to hook things up
+    // in case of 200 response, the method will return at the end of the if block
+    if (response.status === 200) {
+        console.log('before exit tfl service')
+        const returnData = data.matches.map(match => {
+            return {
+                name: match.name,
+                id: match.id,
+                icsId : match.icsId,
+                lat: match.lat,
+                lon: match.lon
+            }
+        })
+        console.log(returnData)
+        return returnData;
     }
-    return [];
+    console.log(error)
+
   } catch (error) {
     // On error, return dummy data for development
     return [
