@@ -197,28 +197,6 @@ export async function getStationSuggestions(stationName, simulate = false) {
     }
     console.log(error)
 
-    // Filter for tube/underground stations only, placeType StopPoint, and use commonName if available
-    if (response.status === 200 && Array.isArray(data.matches)) {
-      // Debug: log each match to inspect properties
-      data.matches.forEach(match => {
-        console.log('name:', match.name);
-        console.log('modes:', match.modes);
-        console.log('type:', match.type);
-        console.log('placeType:', match.placeType);
-      });
-
-      return data.matches
-        .filter(match =>
-          Array.isArray(match.modes) &&
-          match.modes.includes('tube')
-          // Uncomment below if you confirm placeType or type is present and correct
-          // && (match.placeType === 'StopPoint' || match.type === 'StopPoint')
-        )
-        .map(match => ({
-          name: match.commonName || match.name
-        }));
-    }
-    return [];
   } catch (error) {
     // On error, return dummy data for development
     return [
