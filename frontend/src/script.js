@@ -1,6 +1,10 @@
 import { startTrainAnimation } from './train-loader.js';
 startTrainAnimation('train-loader');
 
+// Get references to the station input elements
+const startInput = document.getElementById('start-station');
+const endInput = document.getElementById('end-station');
+
 document.getElementById('search-journey').addEventListener('click', async () => {
     console.log('button clicked');
 
@@ -95,9 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
-// Get references to the station input elements
-const startInput = document.getElementById('start-station');
-const endInput = document.getElementById('end-station');
+
 
 // Debounce function to prevent excessive API calls
 // This creates a delay between user typing and API call
