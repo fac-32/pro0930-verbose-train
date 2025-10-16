@@ -1,6 +1,17 @@
 const chatBotTemplate = document.createElement('template');
 chatBotTemplate.innerHTML = `
     <style>
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
         /* Import root variables from the main stylesheet */
         :host {
             --primary-color: #4CAF50;
@@ -174,7 +185,8 @@ chatBotTemplate.innerHTML = `
                 <!-- Chat messages will appear here -->
             </div>
             <div class="chat-input-container">
-                <input type="text" class="chat-input" placeholder="Ask for travel ideas...">
+                <label for="chat-input" class="sr-only">Chat Message</label>
+                <input type="text" id="chat-input" class="chat-input" placeholder="Ask for travel ideas...">
                 <button class="send-chat-button">Send</button>
             </div>
             <div class="loader ai-loader"></div>
@@ -197,7 +209,7 @@ class ChatBot extends HTMLElement {
         this.chatbotToggleButton = this.shadowRoot.querySelector('.chatbot-toggle-button');
         this.closeChatbotButton = this.shadowRoot.querySelector('.close-chatbot-button');
         this.chatWindow = this.shadowRoot.querySelector('.chat-window');
-        this.chatInput = this.shadowRoot.querySelector('.chat-input');
+        this.chatInput = this.shadowRoot.querySelector('#chat-input');
         this.sendChatButton = this.shadowRoot.querySelector('.send-chat-button');
         this.aiLoader = this.shadowRoot.querySelector('.ai-loader');
 

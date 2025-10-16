@@ -1,6 +1,17 @@
 const journeyPlannerTemplate = document.createElement('template');
 journeyPlannerTemplate.innerHTML = `
     <style>
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
         :host {
             --primary-color: #4CAF50;
             --secondary-color: #2E7D32;
@@ -27,6 +38,11 @@ journeyPlannerTemplate.innerHTML = `
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        .container .submit-journey {
+            background-color: var(--pitstop-color);
+            color: #333;
         }
 
         /* SVG Animation Styles */
@@ -74,8 +90,10 @@ journeyPlannerTemplate.innerHTML = `
         <h2>TFL Journey Planner</h2>
         <p>Get an AI-powered summary of your next journey.</p>
         <div class="input-group">
-            <input type="text" class="from-input" placeholder="From...">
-            <input type="text" class="to-input" placeholder="To...">
+            <label for="from-input" class="sr-only">From</label>
+            <input type="text" id="from-input" class="from-input" placeholder="From...">
+            <label for="to-input" class="sr-only">To</label>
+            <input type="text" id="to-input" class="to-input" placeholder="To...">
         </div>
         <button class="submit-journey">Get Journey Summary</button>
         <div class="map"></div>
@@ -93,8 +111,8 @@ class JourneyPlanner extends HTMLElement {
     }
 
     connectedCallback() {
-        this.fromInput = this.shadowRoot.querySelector('.from-input');
-        this.toInput = this.shadowRoot.querySelector('.to-input');
+        this.fromInput = this.shadowRoot.querySelector('#from-input');
+        this.toInput = this.shadowRoot.querySelector('#to-input');
         this.submitJourneyButton = this.shadowRoot.querySelector('.submit-journey');
         this.journeyResponseContainer = this.shadowRoot.querySelector('.journey-response-container');
         this.journeyLoader = this.shadowRoot.querySelector('.journey-loader');
