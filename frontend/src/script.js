@@ -8,21 +8,17 @@ const endInput = document.getElementById('end-station');
 document.getElementById('search-journey').addEventListener('click', async () => {
     console.log('button clicked');
 
-    // this is aligned with the input elements
-    // there is no need for a separate validation function given there are only 2 input fields on the frontend
-    // and the value used for validtion will be reused below
-    // const start = document.getElementById('start-station').dataset.searchableName;
-    // const end = document.getElementById('end-station').dataset.searchableName;
-    // if (start === undefined || end === undefined) {
-    //     alert('Please select both a start and end station from the dropdowns.');
-    //     return;
-    // }
+    // validation: check for input on both fields
+    const from = startInput.dataset.searchableName;
+    const to = endInput.dataset.searchableName;
+    if (from === undefined || to === undefined) {
+        alert('Please select both a start and end station from the dropdowns.');
+        return;
+    }
     
     try {
         // the server should return 1. the whole journey with stops, and 2. the Open ai suggestions
         // presuming the response/data from the server is in an object
-        const from = startInput.dataset.searchableName;
-        const to = endInput.dataset.searchableName;
         console.log(`From: ${from}, To: ${to}`);
         fetch(`api/tfl/journey/${from}/to/${to}`)
         .then(response => response.json())
