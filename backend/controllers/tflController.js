@@ -8,9 +8,9 @@ const openai = new OpenAI({
 });
 
 //justin code
-const date = 20251007
-const from = 1000129
-const to = 1000013
+const date = 20251016
+// const from = 1000129
+// const to = 1000013
 const time = '1700'
 const type = 'stationSelect';
 
@@ -24,11 +24,16 @@ const stationInfoBundler = (commonName, naptanId, lat, lon) => {
 }
 
 const getJourney = async (req, res) => {
+    console.log('tfl controller get journey')
+    const from = req.params.from;
+    const to = req.params.to;
+    console.log(`From: ${from}, To: ${to}`);
+    
   try {
     let data = await tflservice.TFLAPICall(from, to, time, date, type);
-    console.log(data);
     data = data.data
-
+    console.log('success ftl journey fetch');
+    console.log(data);
     
 
     const allStops = [];
