@@ -170,9 +170,20 @@ function showSuggestions(inputElement, suggestions) {
 // Create debounced version of search function
 const debouncedSearch = debounce(handleFuzzySearch, 1000); // 1 second delay
 
+function sanitizeInput(input) {
+    const validInput = /^[A-Za-z\s-]*$/;
+    return validInput.test(input);
+}
+
 // Add input event listeners to both station inputs
 [startInput, endInput].forEach(input => {
     input.addEventListener('input', (e) => {
+        // input sanitization: allow only letters, spaces, hyphens
+        // remove any invalid characters by replacing them with empty string
+        if (!sanitizeInput(e.target.value)) {
+            e.target.value = e.target.value.replace(/[^A-Za-z\s-]/g, '');
+        }
+
         const searchTerm = e.target.value.trim();
         debouncedSearch(e.target, searchTerm);
     });
