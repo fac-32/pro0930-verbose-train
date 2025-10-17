@@ -139,7 +139,6 @@ canvas {
     height: 2em;
 }
 
-
 .display-playholder {
     display: block; /* Visible by default */
     background-color: var(--background-color);
