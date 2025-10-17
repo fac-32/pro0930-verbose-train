@@ -2,7 +2,7 @@ console.log('Loading: routes/index.js');
 import express from 'express';
 const router = express.Router();
 import { getExampleData } from '../controllers/exampleController.js';
-import { getOpenAIResponse } from '../controllers/openaicontroller.js';
+import { getOpenAIResponse } from '../controllers/openAIController.js';
 
 import { getJourneyWithAI, getStations } from '../controllers/tflController.js';
 
