@@ -176,10 +176,15 @@ function sanitizeInput(input) {
 }
 
 function createInvalidCharNotiBox(parentEl){
+    // prevent multiple boxes
+    if (document.getElementById('invalid-char-notification')) return;
+
     const message = document.createElement('div');
     message.id = 'invalid-char-notification';
     message.textContent = 'Please only input alphabets, spaces, or dashes.';
     parentEl.insertAdjacentElement('afterend', message);
+
+    // auto remove after 1.5 seconds
     setTimeout(() => {
         document.getElementById('invalid-char-notification').remove();
     }, 1500)
