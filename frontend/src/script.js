@@ -41,13 +41,16 @@ function renderJourneyData(data) {
     return data.map(station => station.commonName);
 }
 
-function appendDisplayChild (parentId, childId, textContent) {
-    const childP = document.createElement('p');
-    childP.id = childId;
-    childP.textContent = textContent;
+function appendDisplayChild (parentId, childId, journeyArray) {
+    const childWrapper = document.createElement('ul');
+    childWrapper.id = childId;
+    journeyArray.forEach(stop => {
+        const listItem = document.createElement('li');
+        listItem.textContent = stop;
+        childWrapper.appendChild(listItem);
+    })
     const parentEl = document.getElementById(parentId);
-    parentEl.style.display = 'block';
-    parentEl.appendChild(childP);
+    parentEl.appendChild(childWrapper);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
