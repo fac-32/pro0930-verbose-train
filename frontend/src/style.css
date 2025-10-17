@@ -23,10 +23,6 @@ body {
     margin: 0;
 }
 
-.display-box {
-    display: none; /* Hidden by default */
-}
-
 .container {
     text-align: center;
     background-color: var(--secondary-background-color);
@@ -142,7 +138,6 @@ canvas {
     display: block; /* Visible by default */
     background-color: var(--background-color);
 }
-
 
 #result-display {
     display: none; /* Hidden by default */
