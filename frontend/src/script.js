@@ -133,6 +133,14 @@ async function handleFuzzySearch(inputElement, searchTerm) {
     }
 }
 
+function trimCommonName(name) {
+    const phrase = ' Underground Station';
+    if (name.endsWith(phrase)) {
+        return name.slice(0, -phrase.length);
+    }
+    return name;
+}
+
 // Function to display suggestion dropdown
 function showSuggestions(inputElement, suggestions) {
     console.log('show suggestions function');
@@ -148,14 +156,15 @@ function showSuggestions(inputElement, suggestions) {
     suggestions.forEach(station => {
         const suggestion = document.createElement('div');
         suggestion.className = 'suggestion-item';
-        suggestion.textContent = station.name;
+        suggestion.textContent = trimCommonName(station.name);
         // Store searchable name as data attribute
         suggestion.dataset.searchableName = station.icsId;
         
         // Handle click on suggestion
         suggestion.addEventListener('click', () => {
-            inputElement.value = station.name;
-            // Store searchable name in input's dataset
+            inputElement.value = trimCommonName(station.name);
+            // Store icsId under dataset attribute and used for journey search
+            // trimming down display name shouldn't affect the actual search
             inputElement.dataset.searchableName = station.icsId;
             dropdown.remove();
         });
