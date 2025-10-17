@@ -179,9 +179,35 @@ function showSuggestions(inputElement, suggestions) {
 // Create debounced version of search function
 const debouncedSearch = debounce(handleFuzzySearch, 1000); // 1 second delay
 
+function sanitizeInput(input) {
+    const validInput = /^[A-Za-z\s-]*$/;
+    return validInput.test(input);
+}
+
+function createInvalidCharNotiBox(parentEl){
+    // prevent multiple boxes
+    if (document.getElementById('invalid-char-notification')) return;
+
+    const message = document.createElement('div');
+    message.id = 'invalid-char-notification';
+    message.textContent = 'Please only input alphabets, spaces, or dashes.';
+    parentEl.insertAdjacentElement('afterend', message);
+
+    // auto remove after 1.5 seconds
+    setTimeout(() => {
+        document.getElementById('invalid-char-notification').remove();
+    }, 1500)
+}
 // Add input event listeners to both station inputs
 [startInput, endInput].forEach(input => {
     input.addEventListener('input', (e) => {
+        // input sanitization: allow only letters, spaces, hyphens
+        // remove any invalid characters by replacing them with empty string
+        if (!sanitizeInput(e.target.value)) {
+            e.target.value = e.target.value.replace(/[^A-Za-z\s-]/g, '');
+            createInvalidCharNotiBox(e.target);
+        }
+
         const searchTerm = e.target.value.trim();
         debouncedSearch(e.target, searchTerm);
     });
