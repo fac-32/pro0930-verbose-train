@@ -23,7 +23,7 @@ document.getElementById('search-journey').addEventListener('click', async () => 
         fetch(`api/tfl/journey/${from}/to/${to}`)
         .then(response => response.json())
         .then(data => {
-            appendDisplayChild('tfl-display', 'tfl-p', renderJourneyData(data));
+            appendDisplayChild('tfl-display', 'tfl-ul', renderJourneyData(data));
             document.getElementById('result-display').style.display = 'block';
             // appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
         })
