@@ -26,6 +26,7 @@ document.getElementById('search-journey').addEventListener('click', async () => 
             console.log('search-journey, then block, before data handling')
             // console.log(data);
             document.getElementById('intro-placeholder').style.display = 'none';
+            document.getElementById('result-display').style.display = 'block';
             appendDisplayChild('tfl-display', 'tfl-p', renderJourneyData(data));
             // appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
         })

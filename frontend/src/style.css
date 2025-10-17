@@ -138,33 +138,13 @@ canvas {
   100% { transform: rotate(360deg); }
 }
 
-.display-playholder {
+#intro-placeholder {
     display: block; /* Visible by default */
+    background-color: var(--background-color);
 }
 
-.display-box {
+
+#result-display {
     display: none; /* Hidden by default */
-}
-
-#invalid-char-notification {
     background-color: var(--background-color);
-    color: var(--text-color);
-    font-size: 0.9em;
-    padding: 0.5em;
-    margin: 0.5em;
-    position: 'absolute';
-}
-
-.suggestion-item {
-    background-color: var(--background-color);
-}
-
-.suggestion-item:hover {
-    background-color: var(--tertiary-background-color);
-    color: var(--background-color);
-}
-
-.station-input {
-    position: relative;
-    padding: 2%;
 }
