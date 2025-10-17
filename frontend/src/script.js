@@ -1,5 +1,6 @@
 import { startTrainAnimation } from './train-loader.js';
 startTrainAnimation('train-loader');
+startTrainAnimation('train-loader-1');
 
 // Get references to the station input elements
 const startInput = document.getElementById('start-station');
@@ -24,12 +25,13 @@ document.getElementById('search-journey').addEventListener('click', async () => 
         .then(response => response.json())
         .then(data => {
             appendDisplayChild('tfl-display', 'tfl-ul', renderJourneyData(data));
-            document.getElementById('result-display').style.display = 'block';
+            // document.getElementById('train-loader-1').style.display = 'none';
             // appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
         })
         // Once fetch is initiated, hide the intro placeholder
         // this will get excuted befor the .then block
         document.getElementById('intro-placeholder').style.display = 'none';
+        document.getElementById('result-display').style.display = 'block';
         // need to insert display for loader animation
     } catch (error) {
         console.log(error)
