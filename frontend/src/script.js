@@ -146,7 +146,7 @@ function createInvalidCharNotiBox(parentEl){
 
     const message = document.createElement('div');
     message.id = 'invalid-char-notification';
-    message.textContent = 'Please only input alphabets, spaces, or dashes.';
+    message.textContent = 'Please only input characters, space, or dash.';
     parentEl.insertAdjacentElement('afterend', message);
 
     // auto remove after 1.5 seconds
@@ -154,6 +154,7 @@ function createInvalidCharNotiBox(parentEl){
         document.getElementById('invalid-char-notification').remove();
     }, 1500)
 }
+
 // Add input event listeners to both station inputs
 [startInput, endInput].forEach(input => {
     input.addEventListener('input', (e) => {
