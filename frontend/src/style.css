@@ -102,7 +102,7 @@ canvas {
 }
 
 
-#intro-placeholder {
+.display-playholder {
     display: block; /* Visible by default */
     background-color: var(--background-color);
 }
