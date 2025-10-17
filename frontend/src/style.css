@@ -4,8 +4,8 @@
     --primary-color: #263C52;
     --secondary-color: #3498db;
     --tertiary-color: #3AA8F2;
-    --background-color: #80A36D;
-    --secondary-background-color: #98BF82;
+    --background-color: #cad2db;
+    --secondary-background-color: #dde6f0;
     --tertiary-background-color: #4E6343;
     --text-color: #333;
     --border-radius: 5px;
@@ -41,6 +41,25 @@ h1 {
 
 h2 {
     color: var(--primary-color);
+}
+
+.input-group {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2%;
+    align-items: start;
+    margin: 1% 0% 2% 0%;
+}
+
+.station-input {
+    /* position: relative; */
+    padding: 2%;
+}
+
+input {
+    width: 96%;
+    text-align: center;
+    height: 1.5em;
 }
 
 textarea {
@@ -122,6 +141,11 @@ canvas {
     position: 'absolute';
 }
 
-.station-input {
-    position: relative;
+.suggestion-item {
+    background-color: var(--background-color);
+}
+
+.suggestion-item:hover {
+    background-color: var(--tertiary-background-color);
+    color: var(--background-color);
 }

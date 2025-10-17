@@ -18,25 +18,25 @@
         <!-- Input group for stations -->
         <div class="input-group">
             <div class="station-input left">
-                <label for="start-station">From:</label>
                 <input 
                     type="text" 
                     id="start-station" 
                     name="start-station" 
-                    placeholder="Enter starting station"
+                    placeholder="FROM"
                     aria-label="Starting station"
                     required
                 >
             </div>
-            <div class="arrow">⬇️</div>
+            <div class="arrow">
+                <button>↔</button>
+            </div>
             
             <div class="station-input right">
-                <label for="end-station">To:</label>
                 <input 
                     type="text" 
                     id="end-station" 
                     name="end-station" 
-                    placeholder="Enter destination station"
+                    placeholder="TO"
                     aria-label="Destination station"
                     //attibute from validation
                     required
