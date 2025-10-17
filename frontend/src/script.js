@@ -175,6 +175,15 @@ function sanitizeInput(input) {
     return validInput.test(input);
 }
 
+function createInvalidCharNotiBox(parentEl){
+    const message = document.createElement('div');
+    message.id = 'invalid-char-notification';
+    message.textContent = 'Please only input alphabets, spaces, or dashes.';
+    parentEl.insertAdjacentElement('afterend', message);
+    setTimeout(() => {
+        document.getElementById('invalid-char-notification').remove();
+    }, 1500)
+}
 // Add input event listeners to both station inputs
 [startInput, endInput].forEach(input => {
     input.addEventListener('input', (e) => {
@@ -182,6 +191,7 @@ function sanitizeInput(input) {
         // remove any invalid characters by replacing them with empty string
         if (!sanitizeInput(e.target.value)) {
             e.target.value = e.target.value.replace(/[^A-Za-z\s-]/g, '');
+            createInvalidCharNotiBox(e.target);
         }
 
         const searchTerm = e.target.value.trim();
