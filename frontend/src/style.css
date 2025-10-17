@@ -145,3 +145,12 @@ canvas {
 .display-box {
     display: none; /* Hidden by default */
 }
+
+#train-container {
+    width: 95%;
+    max-width: 1200px;
+}
+
+#train-container canvas {
+    height: 6em;
+}
