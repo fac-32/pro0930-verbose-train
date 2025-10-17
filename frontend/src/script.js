@@ -6,8 +6,6 @@ const startInput = document.getElementById('start-station');
 const endInput = document.getElementById('end-station');
 
 document.getElementById('search-journey').addEventListener('click', async () => {
-    console.log('button clicked');
-
     // validation: check for input on both fields
     const from = startInput.dataset.searchableName;
     const to = endInput.dataset.searchableName;
@@ -17,27 +15,23 @@ document.getElementById('search-journey').addEventListener('click', async () => 
     }
     
     try {
-        // the server should return 1. the whole journey with stops, and 2. the Open ai suggestions
-        // presuming the response/data from the server is in an object
-        console.log(`From: ${from}, To: ${to}`);
         fetch(`api/tfl/journey/${from}/to/${to}`)
         .then(response => response.json())
         .then(data => {
-            console.log('search-journey, then block, before data handling')
-            // console.log(data);
-            document.getElementById('intro-placeholder').style.display = 'none';
-            document.getElementById('result-display').style.display = 'block';
             appendDisplayChild('tfl-display', 'tfl-p', renderJourneyData(data));
+            document.getElementById('result-display').style.display = 'block';
             // appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
         })
+        // Once fetch is initiated, hide the intro placeholder
+        // this will get excuted befor the .then block
+        document.getElementById('intro-placeholder').style.display = 'none';
+        // need to insert display for loader animation
     } catch (error) {
         console.log(error)
     }
 })
 
 function renderJourneyData(data) {
-    // keep for reference
-    // return data.map(station => `<p>${station.commonName} (${station.naptanId}) - Lat: ${station.lat}, Lon: ${station.lon}</p>`).join('');
     return data.map(station => station.commonName);
 }
 
@@ -124,12 +118,9 @@ async function handleFuzzySearch(inputElement, searchTerm) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({searchTerm}),
-
         })
         .then(response => response.json())
         .then(data => {
-            // console.log('handle fuzzy search, then block, before data handling')
-            // console.log(data.suggestions);
             showSuggestions(inputElement, data.suggestions);
         })
     } catch (error) {
@@ -147,7 +138,6 @@ function trimCommonName(name) {
 
 // Function to display suggestion dropdown
 function showSuggestions(inputElement, suggestions) {
-    console.log('show suggestions function');
     // Remove existing dropdown if any
     const existingDropdown = inputElement.parentElement.querySelector('.suggestions-dropdown');
     if (existingDropdown) existingDropdown.remove();
