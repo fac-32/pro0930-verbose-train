@@ -16,23 +16,17 @@ document.getElementById('search-journey').addEventListener('click', async () => 
         return;
     }
     
-    try {
-        // the server should return 1. the whole journey with stops, and 2. the Open ai suggestions
-        // presuming the response/data from the server is in an object
-        console.log(`From: ${from}, To: ${to}`);
-        fetch(`api/tfl/journey/${from}/to/${to}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log('search-journey, then block, before data handling')
-            // console.log(data);
-            document.getElementById('intro-placeholder').style.display = 'none';
-            appendDisplayChild('tfl-display', 'tfl-p', renderJourneyData(data));
-            // appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
-        })
-    } catch (error) {
-        console.log(error)
-    }
-})
+    const tubeFrame = document.getElementById('tube-frame');
+    tubeFrame.style.display = 'block';
+
+    const message = {
+        type: 'journeySearch',
+        from: from,
+        to: to
+    };
+
+    tubeFrame.contentWindow.postMessage(message, '*');
+});
 
 function renderJourneyData(data) {
     // keep for reference

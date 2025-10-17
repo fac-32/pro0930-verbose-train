@@ -1,9 +1,4 @@
 console.log('Loading: services/tflservice.js');
-// Import dotenv to load environment variables from .env file
-import dotenv from 'dotenv';
-// Load environment variables
-dotenv.config();
-
 import fetch from 'node-fetch';
 
 const TFL_API_URL = 'https://api.tfl.gov.uk/Journey/JourneyResults/';
