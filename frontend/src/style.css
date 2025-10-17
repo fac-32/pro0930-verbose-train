@@ -98,8 +98,8 @@ button:hover {
 }
 
 canvas {
-    background: #cceeff;
-    border: 2px solid #333;
+    background-color: var(--secondary-background-color);
+    /* border: 2px solid #333; */
     width: 60%;
     height: 2em;
 }
