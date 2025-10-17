@@ -6,6 +6,7 @@
     --tertiary-color: #3AA8F2;
     --background-color: #80A36D;
     --secondary-background-color: #98BF82;
+    --tertiary-background-color: #4E6343;
     --text-color: #333;
     --border-radius: 5px;
     --box-shadow: 0 4px 12px #0000001a;
@@ -154,6 +155,16 @@ canvas {
     position: 'absolute';
 }
 
+.suggestion-item {
+    background-color: var(--background-color);
+}
+
+.suggestion-item:hover {
+    background-color: var(--tertiary-background-color);
+    color: var(--background-color);
+}
+
 .station-input {
     position: relative;
+    padding: 2%;
 }
