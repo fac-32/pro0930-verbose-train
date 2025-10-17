@@ -43,9 +43,9 @@ h2 {
     color: var(--primary-color);
 }
 
-.input-group {
+.journey-planner {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 1fr auto 1fr auto;
     gap: 2%;
     align-items: start;
     margin: 1% 0% 2% 0%;
