@@ -1,6 +1,5 @@
-import { startTrainAnimation } from './train-loader.js';
-startTrainAnimation('train-loader');
-startTrainAnimation('train-loader-1');
+// import { startTrainAnimation } from './train-loader.js';
+// startTrainAnimation('train-loader');
 
 // Get references to the station input elements
 const startInput = document.getElementById('start-station');
@@ -24,8 +23,9 @@ document.getElementById('search-journey').addEventListener('click', async () => 
         fetch(`api/tfl/journey/${from}/to/${to}`)
         .then(response => response.json())
         .then(data => {
-            appendDisplayChild('tfl-display', 'tfl-ul', renderJourneyData(data));
-            // document.getElementById('train-loader-1').style.display = 'none';
+            console.log('search-journey, then block, before data handling')
+            // console.log(data);
+            appendDisplayChild('tfl-display', 'tfl-p', renderJourneyData(data));
             // appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
         })
         // Once fetch is initiated, hide the intro placeholder
@@ -53,49 +53,6 @@ function appendDisplayChild (parentId, childId, journeyArray) {
     const parentEl = document.getElementById(parentId);
     parentEl.appendChild(childWrapper);
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  const promptInput = document.getElementById('prompt-input');
-  const submitButton = document.getElementById('submit-prompt');
-  const responseContainer = document.getElementById('response-container');
-  const loader = document.getElementById('loader');
-
-  submitButton.addEventListener('click', async () => {
-    const prompt = promptInput.value;
-    if (!prompt) {
-      alert('Please enter a prompt.');
-      return;
-    }
-
-    loader.style.display = 'block';
-    responseContainer.innerHTML = '';
-
-    try {
-      const response = await fetch('/api/openai', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to get response from the server.');
-      }
-
-      const data = await response.json();
-      const message = data.message.content;
-      responseContainer.textContent = message;
-      responseContainer.style.color = 'black';
-    } catch (error) {
-      responseContainer.textContent = error.message;
-      responseContainer.style.color = 'red';
-    } finally {
-      loader.style.display = 'none';
-    }
-  });
-});
-
 
 // Debounce function to prevent excessive API calls
 // This creates a delay between user typing and API call
@@ -213,6 +170,49 @@ function createInvalidCharNotiBox(parentEl){
         debouncedSearch(e.target, searchTerm);
     });
 });
+
+
+// document.addEventListener('DOMContentLoaded', () => {
+//   const promptInput = document.getElementById('prompt-input');
+//   const submitButton = document.getElementById('submit-prompt');
+//   const responseContainer = document.getElementById('response-container');
+//   const loader = document.getElementById('loader');
+
+//   submitButton.addEventListener('click', async () => {
+//     const prompt = promptInput.value;
+//     if (!prompt) {
+//       alert('Please enter a prompt.');
+//       return;
+//     }
+
+//     loader.style.display = 'block';
+//     responseContainer.innerHTML = '';
+
+//     try {
+//       const response = await fetch('/api/openai', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ prompt }),
+//       });
+
+//       if (!response.ok) {
+//         throw new Error('Failed to get response from the server.');
+//       }
+
+//       const data = await response.json();
+//       const message = data.message.content;
+//       responseContainer.textContent = message;
+//       responseContainer.style.color = 'black';
+//     } catch (error) {
+//       responseContainer.textContent = error.message;
+//       responseContainer.style.color = 'red';
+//     } finally {
+//       loader.style.display = 'none';
+//     }
+//   });
+// });
 
 // document.addEventListener('DOMContentLoaded', () => {
 //   const stopsInput = document.getElementById('prompt-input');
