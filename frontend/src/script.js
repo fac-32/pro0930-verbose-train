@@ -15,6 +15,11 @@ document.getElementById('search-journey').addEventListener('click', async () => 
     }
     
     try {
+        startInput.value = '';
+        endInput.value = '';
+        const existingResults = document.getElementById('tfl-ul');
+        if (existingResults) existingResults.remove();
+        
         fetch(`api/tfl/journey/${from}/to/${to}`)
         .then(response => response.json())
         .then(data => {
