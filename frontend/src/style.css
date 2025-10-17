@@ -6,7 +6,7 @@
     --tertiary-color: #3AA8F2;
     --background-color: #cad2db;
     --secondary-background-color: #dde6f0;
-    --tertiary-background-color: #4E6343;
+    --tertiary-background-color: #446d9c;
     --text-color: #333;
     --border-radius: 5px;
     --box-shadow: 0 4px 12px #0000001a;
@@ -62,6 +62,23 @@ input {
     height: 2em;
     border-radius: 8px;
     border: 2px
+}
+
+.suggestions-dropdown {
+    width: 96%;
+    margin: 0% auto;
+    max-height: 6em;
+    overflow-y: auto;
+    padding-top: 2px;
+}
+
+.suggestion-item {
+    background-color: var(--background-color);
+}
+
+.suggestion-item:hover {
+    background-color: var(--tertiary-background-color);
+    color: var(--background-color);
 }
 
 textarea {
@@ -141,13 +158,4 @@ canvas {
     padding: 0.5em;
     margin: 0.5em;
     position: 'absolute';
-}
-
-.suggestion-item {
-    background-color: var(--background-color);
-}
-
-.suggestion-item:hover {
-    background-color: var(--tertiary-background-color);
-    color: var(--background-color);
 }
