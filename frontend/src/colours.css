@@ -6,15 +6,15 @@
     --secondary-background-color: #dde6f0;
     --tertiary-background-color: #446d9c;
     --text-color: #333;
-    --BAKERLOO: rgb(178, 99, 0);
-    --CENTRAL: rgb(220, 36, 31);
-    --CIRCLE: rgb(255, 200, 10);
-    --DISTRICT: rgb(0, 125, 50);
-    --HAMMERSMITH-AND-CITY: rgb(245, 137, 166);
-    --JUBILEE: rgb(131, 141, 147);
-    --METROPOLITAN: rgb(155, 0, 88);
-    --NORTHERN: rgb(0, 0, 0);
-    --PICCADILLY: rgb(0, 25, 168);
-    --VICTORIA: rgb(3, 155, 229);
-    --WATERLOO-AND-CITY: rgb(118, 208, 189);
+    --bakerloo: rgb(178, 99, 0);
+    --central: rgb(220, 36, 31);
+    --circle: rgb(255, 200, 10);
+    --district: rgb(0, 125, 50);
+    --hammersmith-city: rgb(245, 137, 166);
+    --jubilee: rgb(131, 141, 147);
+    --metropolitan: rgb(155, 0, 88);
+    --northern: rgb(0, 0, 0);
+    --piccadilly: rgb(0, 25, 168);
+    --victoria: rgb(3, 155, 229);
+    --waterloo-city: rgb(118, 208, 189);
 }
