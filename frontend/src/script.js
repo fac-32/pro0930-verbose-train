@@ -207,6 +207,21 @@ function showSuggestions(inputElement, suggestions) {
     inputElement.parentElement.appendChild(dropdown);
 }
 
+function swapInput () {
+    const valueHolder = {
+        value: startInput.value,
+        searchableName: startInput.dataset.searchableName
+    };
+
+    startInput.value = endInput.value;
+    startInput.dataset.searchableName = endInput.dataset.searchableName;
+
+    endInput.value = valueHolder.value;
+    endInput.dataset.searchableName = valueHolder.searchableName;
+}
+
+document.getElementById('swap-btn').addEventListener('click', swapInput);
+
 // Create debounced version of search function
 const debouncedSearch = debounce(handleFuzzySearch, 1000); // 1 second delay
 
