@@ -21,7 +21,9 @@ export function renderCardTemplate(rootElement, data) {
     stopName.textContent = trimCommonName(data.commonName);
     
     const lineName = clone.querySelector('.line-name');
-    lineName.textContent = '(Hard code) data not in dummy';
+    lineName.textContent = `${DUMMY_LINE} line`;
+    lineName.style.backgroundColor = `var(--${DUMMY_LINE})`;
+    lineName.style.color = `var(--${DUMMY_LINE}-text)`;
 
     const p14tWrapper = clone.querySelector('.pts-of-interest-wrapper')
     data.pointsOfInterest.forEach(point => {
