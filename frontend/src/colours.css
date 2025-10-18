@@ -6,6 +6,7 @@
     --secondary-background-color: #dde6f0;
     --tertiary-background-color: #446d9c;
     --text-color: #333;
+    --text-color-light: #dde6f0;
     
     --bakerloo: rgb(178, 99, 0);
     --central: rgb(220, 36, 31);
@@ -20,14 +21,14 @@
     --waterloo-city: rgb(118, 208, 189);
 
     --bakerloo-text: var(--text-color);
-    --central-text: var(--secondary-background-color);
+    --central-text: var(--text-color-light);
     --circle-text: var(--text-color);
-    --district-text: var(--secondary-background-color);
+    --district-text: var(--text-color-light);
     --hammersmith-city-text: var(--text-color);
-    --jubilee-text: var(--secondary-background-color);
-    --metropolitan-text: var(--secondary-background-color);
-    --northern-text: var(--secondary-background-color);
-    --piccadilly-text: var(--secondary-background-color);
+    --jubilee-text: var(--text-color-light);
+    --metropolitan-text: var(--text-color-light);
+    --northern-text: var(--text-color-light);
+    --piccadilly-text: var(--text-color-light);
     --victoria-text: var(--text-color);
     --waterloo-city-text: var(--text-color);
 }
