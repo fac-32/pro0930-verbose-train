@@ -518,3 +518,25 @@ canvas {
     justify-content: center;
     padding: 0;
 }
+#invalid-char-notification {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: 0.9em;
+    padding: 0.5em;
+    margin: 0.5em;
+    position: 'absolute';
+}
+
+.suggestion-item {
+    background-color: var(--background-color);
+}
+
+.suggestion-item:hover {
+    background-color: var(--tertiary-background-color);
+    color: var(--background-color);
+}
+
+.station-input {
+    position: relative;
+    padding: 2%;
+}
