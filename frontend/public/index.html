@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
+    <button id="chatbot-toggle-button">🤖</button>
     <div class="container">
         <h1>🚂 Verbose Train 🚂</h1>
         <p>All aboard! The Verbose Train is getting ready to depart.</p>
@@ -54,30 +55,39 @@
 
         <!-- Results containers -->
         <div class="container">
-            <div class="display-placeholder" id="intro-placeholder">
-                <p>Just type in the start and end point of your trip, we will handle the rest!</p>
-            </div>
-            <div class="display-box" id="tfl-display"></div>
-            <div class="display-box" id="open-ai-display"></div>
+            <iframe id="tube-frame" src="tube.html" style="display: none; width: 100%; height: 800px; border: none;"></iframe>
         </div>
     </div>
 
     
-    <div class="container">
-        <canvas id="train-loader"></canvas>
+    <div class="container" id="train-container">
+        <div>
+            <canvas id="train-loader"></canvas>
+        </div>
         <div id="emoji-loader">
             <span id="spin-loader">😈</span>
             <span id="slide-loader">😎</span>
         </div>
     </div>
-    <div class="container" id="ai-container">
-        <h2>OpenAI Interaction</h2>
-        <textarea id="prompt-input" rows="4" cols="50" placeholder="Enter your prompt here..."></textarea>
-        <!-- <textarea id="prompt-input" rows="4" cols="50" placeholder="Enter stops, separated by commas (e.g. Victoria, Euston, King's Cross)"></textarea> -->
-        <br>
-        <button id="submit-prompt">Get AI Response</button>
-        <div class="loader" id="loader"></div>
-        <div id="response-container"></div>
+    <div class="tube-chatbot-container">
+        <div class="tube-header">Mind the Gap</div>
+
+        <div class="headlight left"></div>
+        <div class="headlight right"></div>
+
+        <div class="tube-windscreen" id="chat-window">
+             <div class="message bot-message">
+                Hello! I'm the Tube Navigator. Ask me for journey plans or live line status. For example, "Victoria to Canary Wharf".
+            </div>
+        </div>
+        
+        <div class="tube-front-panel">
+            <div class="tube-logo"><span>UNDERGROUND</span></div>
+            <form class="chat-input-form" id="chat-form">
+                <input type="text" id="user-input" placeholder="Ask a question..." autocomplete="off">
+                <button type="submit">→</button>
+            </form>
+        </div>
     </div>
     
     <script type="module" src="/src/train-loader.js"></script>

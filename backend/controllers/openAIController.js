@@ -1,8 +1,4 @@
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+import openai from '../lib/OpenAIClient.js';
 
 const getOpenAIResponse = async (req, res) => {
   try {
