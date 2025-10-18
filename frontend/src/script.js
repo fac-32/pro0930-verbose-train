@@ -5,6 +5,59 @@
 const startInput = document.getElementById('start-station');
 const endInput = document.getElementById('end-station');
 
+// dummy data for journey result rendering
+const DUMMY = [
+    {
+        name: 'Oxford Circus Underground Station',
+        id: '940GZZLUOXC',
+        icsId: '1000173',
+        lat: 51.515224,
+        lon: -0.141903,
+        pointsOfInterest: [
+            {
+                name: 'Oxford Circus 1',
+                description: 'description 1'
+            },
+            {
+                name: 'Oxford Circus 2',
+                description: 'description 2'
+            }
+        ]
+    },
+    {
+        commonName: 'Green Park Underground Station',
+        naptanId: '940GZZLUGPK',
+        lat: 51.506947,
+        lon: -0.142787,
+        pointsOfInterest: [
+            {
+                name: 'Green Park 1',
+                description: 'description 3'
+            },
+            {
+                name: 'Green Park 2',
+                description: 'description 4'
+            }
+        ]
+    },
+    {
+        commonName: 'Victoria',
+        naptanId: 'HUBVIC',
+        lat: 51.495812,
+        lon: -0.143826,
+        pointsOfInterest: [
+            {
+                name: 'Victoria 1',
+                description: 'descriptiption 5'
+            },
+            {
+                name: 'Victoria 2',
+                description: 'descriptiption 6'
+            }
+        ]
+    },
+]
+
 document.getElementById('search-journey').addEventListener('click', async () => {
     // validation: check for input on both fields
     const from = startInput.dataset.searchableName;
