@@ -8,7 +8,7 @@ const endInput = document.getElementById('end-station');
 // dummy data for journey result rendering
 const DUMMY = [
     {
-        name: 'Oxford Circus Underground Station',
+        commonName: 'Oxford Circus Underground Station',
         id: '940GZZLUOXC',
         icsId: '1000173',
         lat: 51.515224,
