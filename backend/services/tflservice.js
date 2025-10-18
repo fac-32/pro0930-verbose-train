@@ -130,3 +130,37 @@ export async function getStationSuggestions(stationName, simulate = false) {
     ];
   }
 }
+
+
+
+
+
+
+[
+  {
+    station: "Baker Street",
+    pointsOfInterest: [
+      {
+        name: "Sherlock Holmes Museum",
+        description: "A museum dedicated to the famous detective, located at 221B Baker Street."
+      },
+      {
+        name: "Madame Tussauds",
+        description: "World-famous wax museum featuring realistic celebrity figures."
+      }
+    ]
+  },
+  {
+    station: "Westminster",
+    pointsOfInterest: [
+      {
+        name: "Big Ben",
+        description: "Iconic clock tower and symbol of London next to the Houses of Parliament."
+      },
+      {
+        name: "Westminster Abbey",
+        description: "Historic church where British monarchs are crowned."
+      }
+    ]
+  }
+]
