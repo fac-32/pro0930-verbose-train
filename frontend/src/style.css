@@ -6,6 +6,7 @@
     --tertiary-color: #3AA8F2;
     --background-color: #80A36D;
     --secondary-background-color: #98BF82;
+    --tertiary-background-color: #4E6343;
     --text-color: #333;
     --border-radius: 5px;
     --box-shadow: 0 4px 12px #0000001a;
@@ -165,7 +166,6 @@ canvas {
 .display-playholder {
     display: block; /* Visible by default */
 }
-
 
 .display-box {
     display: none; /* Hidden by default */

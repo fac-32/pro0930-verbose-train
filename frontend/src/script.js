@@ -151,6 +151,14 @@ async function handleFuzzySearch(inputElement, searchTerm) {
     }
 }
 
+function trimCommonName(name) {
+    const phrase = ' Underground Station';
+    if (name.endsWith(phrase)) {
+        return name.slice(0, -phrase.length);
+    }
+    return name;
+}
+
 // Function to display suggestion dropdown
 function showSuggestions(inputElement, suggestions) {
     console.log('show suggestions function');
@@ -166,14 +174,15 @@ function showSuggestions(inputElement, suggestions) {
     suggestions.forEach(station => {
         const suggestion = document.createElement('div');
         suggestion.className = 'suggestion-item';
-        suggestion.textContent = station.name;
+        suggestion.textContent = trimCommonName(station.name);
         // Store searchable name as data attribute
         suggestion.dataset.searchableName = station.icsId;
         
         // Handle click on suggestion
         suggestion.addEventListener('click', () => {
-            inputElement.value = station.name;
-            // Store searchable name in input's dataset
+            inputElement.value = trimCommonName(station.name);
+            // Store icsId under dataset attribute and used for journey search
+            // trimming down display name shouldn't affect the actual search
             inputElement.dataset.searchableName = station.icsId;
             dropdown.remove();
         });
@@ -188,9 +197,35 @@ function showSuggestions(inputElement, suggestions) {
 // Create debounced version of search function
 const debouncedSearch = debounce(handleFuzzySearch, 1000); // 1 second delay
 
+function sanitizeInput(input) {
+    const validInput = /^[A-Za-z\s-]*$/;
+    return validInput.test(input);
+}
+
+function createInvalidCharNotiBox(parentEl){
+    // prevent multiple boxes
+    if (document.getElementById('invalid-char-notification')) return;
+
+    const message = document.createElement('div');
+    message.id = 'invalid-char-notification';
+    message.textContent = 'Please only input alphabets, spaces, or dashes.';
+    parentEl.insertAdjacentElement('afterend', message);
+
+    // auto remove after 1.5 seconds
+    setTimeout(() => {
+        document.getElementById('invalid-char-notification').remove();
+    }, 1500)
+}
 // Add input event listeners to both station inputs
 [startInput, endInput].forEach(input => {
     input.addEventListener('input', (e) => {
+        // input sanitization: allow only letters, spaces, hyphens
+        // remove any invalid characters by replacing them with empty string
+        if (!sanitizeInput(e.target.value)) {
+            e.target.value = e.target.value.replace(/[^A-Za-z\s-]/g, '');
+            createInvalidCharNotiBox(e.target);
+        }
+
         const searchTerm = e.target.value.trim();
         debouncedSearch(e.target, searchTerm);
     });
