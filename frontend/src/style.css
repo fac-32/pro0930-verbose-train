@@ -75,6 +75,24 @@ input {
     color: var(--background-color);
 }
 
+.info-card-main {
+    text-align: left;
+    background-color: var(--background-color);
+    padding: 2em;
+    margin-bottom: 2em;
+}
+
+.pts-of-interest-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.point-of-interest-card {
+    background-color: var(--secondary-background-color);
+    padding: 1em;
+    margin-right: 1em;
+}
+
 textarea {
     width: 100%;
     padding: 10px;

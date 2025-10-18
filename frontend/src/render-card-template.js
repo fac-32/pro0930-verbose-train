@@ -21,6 +21,7 @@ export function renderCardTemplate(rootElement, data) {
     const p14tWrapper = clone.querySelector('.pts-of-interest-wrapper')
     data.pointsOfInterest.forEach(point => {
         const cardDiv = document.createElement('div');
+        cardDiv.className = 'point-of-interest-card';
         const h4 = document.createElement('h4');
         h4.textContent = point.name;
         cardDiv.appendChild(h4);
