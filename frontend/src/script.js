@@ -259,16 +259,14 @@ function createNotiBox(parentEl, selfId, msgText){
         const searchTerm = e.target.value.trim();
         debouncedSearch(e.target, searchTerm);
     });
-});
-
-[startInput, endInput].forEach(el => {
-    el.addEventListener('focusout', () => {
+    input.addEventListener('focusout', () => {
         setTimeout(() => {
             const existingDropdown = document.querySelector('.suggestions-dropdown');
             if (existingDropdown) existingDropdown.remove();
         }, 100)
     })
-})
+});
+
 
 // document.addEventListener('DOMContentLoaded', () => {
 //   const promptInput = document.getElementById('prompt-input');
