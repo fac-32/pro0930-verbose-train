@@ -15,8 +15,11 @@ document.getElementById('search-journey').addEventListener('click', async () => 
     }
     
     try {
+        // clear input field
         startInput.value = '';
         endInput.value = '';
+
+        // remove existing journey result
         const existingResults = document.getElementById('tfl-ul');
         if (existingResults) existingResults.remove();
         
@@ -25,13 +28,12 @@ document.getElementById('search-journey').addEventListener('click', async () => 
         .then(data => {
             console.log('search-journey, then block, before data handling')
             // console.log(data);
-            appendDisplayChild('tfl-display', 'tfl-p', renderJourneyData(data));
+            appendDisplayChild('tfl-display', 'tfl-ul', renderJourneyData(data));
             // appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
         })
         // Once fetch is initiated, hide the intro placeholder
         // this will get excuted befor the .then block
-        document.getElementById('intro-placeholder').style.display = 'none';
-        document.getElementById('result-display').style.display = 'block';
+        document.querySelector('.display-box').style.display = 'block';
         // need to insert display for loader animation
     } catch (error) {
         console.log(error)
