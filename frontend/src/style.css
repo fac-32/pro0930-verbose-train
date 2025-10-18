@@ -133,17 +133,6 @@ canvas {
     height: 2em;
 }
 
-.display-playholder {
-    display: block; /* Visible by default */
-    background-color: var(--background-color);
-}
-
-
-.display-box {
-    display: none; /* Hidden by default */
-    background-color: var(--background-color);
-}
-
 #invalid-char-notification {
     background-color: var(--background-color);
     color: var(--text-color);
