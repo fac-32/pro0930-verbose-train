@@ -1,6 +1,8 @@
 // import { startTrainAnimation } from './train-loader.js';
 // startTrainAnimation('train-loader');
 
+import { renderCardTemplate } from './render-card-template.js';
+
 // Get references to the station input elements
 const startInput = document.getElementById('start-station');
 const endInput = document.getElementById('end-station');
@@ -57,6 +59,16 @@ const DUMMY = [
         ]
     },
 ]
+
+function renderDummy (data) {
+    console.log('render dummy')
+    const elWrapper = document.getElementById('journey-result-wrapper');
+    data.forEach(stop => {
+        const wrapperDiv = document.createElement('div');
+        elWrapper.appendChild(renderCardTemplate(wrapperDiv, stop));
+    })
+}
+renderDummy(DUMMY)
 
 document.getElementById('search-journey').addEventListener('click', async () => {
     // validation: check for input on both fields
