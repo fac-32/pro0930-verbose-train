@@ -83,6 +83,12 @@ input {
     border-radius: 8px;
 }
 
+.line-name {
+    border-radius: 8px;
+    display: inline-block;
+    padding: 0.1em 0.5em;
+}
+
 .pts-of-interest-wrapper {
     display: grid;
     grid-template-columns: 1fr 1fr;
