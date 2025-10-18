@@ -80,6 +80,7 @@ input {
     background-color: var(--background-color);
     padding: 2em;
     margin-bottom: 2em;
+    border-radius: 8px;
 }
 
 .pts-of-interest-wrapper {
@@ -91,6 +92,7 @@ input {
     background-color: var(--secondary-background-color);
     padding: 1em;
     margin-right: 1em;
+    border-radius: 8px;
 }
 
 textarea {

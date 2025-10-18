@@ -12,6 +12,11 @@ export function renderCardTemplate(rootElement, data) {
     // deep copy of template clone with all child elements inside template
     const clone = tpl.content.cloneNode(true);
     
+    const DUMMY_LINE = 'VICTORIA'
+
+    const cardMain = clone.querySelector('.info-card-main');
+    cardMain.style.borderLeft = `4px solid var(--${DUMMY_LINE})`;
+
     const stopName = clone.querySelector('.stop-name');
     stopName.textContent = trimCommonName(data.commonName);
     
