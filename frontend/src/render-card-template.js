@@ -12,7 +12,7 @@ export function renderCardTemplate(rootElement, data) {
     // deep copy of template clone with all child elements inside template
     const clone = tpl.content.cloneNode(true);
     
-    const DUMMY_LINE = 'VICTORIA'
+    const DUMMY_LINE = randomLine();
 
     const cardMain = clone.querySelector('.info-card-main');
     cardMain.style.borderLeft = `4px solid var(--${DUMMY_LINE})`;
@@ -48,4 +48,12 @@ function trimCommonName(name) {
         return name.slice(0, -phrase.length);
     }
     return name;
+}
+
+function randomLine() {
+    // this is dummy function to choose a random tube line colour
+    // all names in array are real line ids from TFL
+    const allLines = ['bakerloo', 'central', 'circle', 'district', 'hammersmith-city', 'jubilee', 'metropolitan', 'northern', 'piccadilly', 'victoria', 'waterloo-city'];
+    const i = Math.floor(Math.random() * (allLines.length));
+    return allLines[i];
 }
