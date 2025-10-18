@@ -17,10 +17,6 @@ body {
     margin: 0;
 }
 
-.display-box {
-    display: none; /* Hidden by default */
-}
-
 .container {
     text-align: center;
     background-color: var(--secondary-background-color);
@@ -135,14 +131,6 @@ canvas {
     border: 2px solid #333;
     width: 60%;
     height: 2em;
-}
-
-.display-playholder {
-    display: block; /* Visible by default */
-}
-
-.display-box {
-    display: none; /* Hidden by default */
 }
 
 #invalid-char-notification {
