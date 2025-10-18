@@ -261,6 +261,14 @@ function createNotiBox(parentEl, selfId, msgText){
     });
 });
 
+[startInput, endInput].forEach(el => {
+    el.addEventListener('focusout', () => {
+        setTimeout(() => {
+            const existingDropdown = document.querySelector('.suggestions-dropdown');
+            if (existingDropdown) existingDropdown.remove();
+        }, 100)
+    })
+})
 
 // document.addEventListener('DOMContentLoaded', () => {
 //   const promptInput = document.getElementById('prompt-input');
