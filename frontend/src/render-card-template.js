@@ -11,8 +11,25 @@ export function renderCardTemplate(rootElement, data) {
     
     // deep copy of template clone with all child elements inside template
     const clone = tpl.content.cloneNode(true);
+    
     const stopName = clone.querySelector('.stop-name');
     stopName.textContent = trimCommonName(data.commonName);
+    
+    const lineName = clone.querySelector('.line-name');
+    lineName.textContent = '(Hard code) data not in dummy';
+
+    const p14tWrapper = clone.querySelector('.pts-of-interest-wrapper')
+    data.pointsOfInterest.forEach(point => {
+        const cardDiv = document.createElement('div');
+        const h4 = document.createElement('h4');
+        h4.textContent = point.name;
+        cardDiv.appendChild(h4);
+        const p = document.createElement('p');
+        p.textContent = point.description;
+        cardDiv.appendChild(p);
+        p14tWrapper.appendChild(cardDiv);
+    })
+
 
     frag.appendChild(clone);
     rootElement.appendChild(frag);
