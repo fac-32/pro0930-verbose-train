@@ -20,11 +20,11 @@
     --waterloo-city: rgb(118, 208, 189);
 
     --bakerloo-text: var(--text-color);
-    --central-text: var(--text-color);
+    --central-text: var(--secondary-background-color);
     --circle-text: var(--text-color);
     --district-text: var(--secondary-background-color);
     --hammersmith-city-text: var(--text-color);
-    --jubilee-text: var(--text-color);
+    --jubilee-text: var(--secondary-background-color);
     --metropolitan-text: var(--secondary-background-color);
     --northern-text: var(--secondary-background-color);
     --piccadilly-text: var(--secondary-background-color);
