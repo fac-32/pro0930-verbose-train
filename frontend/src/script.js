@@ -152,6 +152,12 @@ async function handleFuzzySearch(inputElement, searchTerm) {
         })
         .then(response => response.json())
         .then(data => {
+            // console.log('handle fuzzy search, then block, before data handling')
+            // console.log(data.suggestions);
+            if (data.suggestions.length === 0) {
+                createNotiBox(inputElement, 'user-typo', "We couldn't find anything. Did you make a typo?");
+                return
+            }
             showSuggestions(inputElement, data.suggestions);
         })
     } catch (error) {
@@ -209,18 +215,19 @@ function sanitizeInput(input) {
     return validInput.test(input);
 }
 
-function createInvalidCharNotiBox(parentEl){
+function createNotiBox(parentEl, selfId, msgText){
     // prevent multiple boxes
-    if (document.getElementById('invalid-char-notification')) return;
+    if (document.getElementById(selfId)) return;
 
     const message = document.createElement('div');
-    message.id = 'invalid-char-notification';
-    message.textContent = 'Please only input characters, space, or dash.';
+    message.className = 'custom-pop-up-message';
+    message.id = selfId;
+    message.textContent = msgText;
     parentEl.insertAdjacentElement('afterend', message);
 
     // auto remove after 1.5 seconds
     setTimeout(() => {
-        document.getElementById('invalid-char-notification').remove();
+        document.getElementById(selfId).remove();
     }, 1500)
 }
 
@@ -231,7 +238,7 @@ function createInvalidCharNotiBox(parentEl){
         // remove any invalid characters by replacing them with empty string
         if (!sanitizeInput(e.target.value)) {
             e.target.value = e.target.value.replace(/[^A-Za-z\s-]/g, '');
-            createInvalidCharNotiBox(e.target);
+            createNotiBox(e.target, 'invalid-char-notification', 'Please only input characters, space, or dash.');
         }
 
         const searchTerm = e.target.value.trim();
