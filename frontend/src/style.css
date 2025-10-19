@@ -37,6 +37,10 @@ h2 {
     color: var(--primary-color);
 }
 
+.stop-name {
+    margin-bottom: 0.5em;
+}
+
 .journey-planner {
     display: grid;
     grid-template-columns: 1fr auto 1fr auto;
@@ -77,7 +81,7 @@ input {
 .info-card-main {
     text-align: left;
     background-color: var(--background-color);
-    padding: 2em;
+    padding: 1em 2em 2em 2em;
     margin-bottom: 2em;
     border-radius: 8px;
 }
@@ -91,6 +95,14 @@ input {
 .pts-of-interest-wrapper {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    margin-bottom: 2px;
+}
+
+.point-of-interest-card {
+    background-color: var(--secondary-background-color);
+    padding: 1em;
+    margin: 0 1em 5px 0;
+    border-radius: 8px;
 }
 
 canvas {
@@ -105,11 +117,8 @@ canvas {
     display: none;
 }
 
-.point-of-interest-card {
-    background-color: var(--secondary-background-color);
-    padding: 1em;
-    margin-right: 1em;
-    border-radius: 8px;
+.joruney-header-wrapper {
+    margin-bottom: 2em;
 }
 
 button {
