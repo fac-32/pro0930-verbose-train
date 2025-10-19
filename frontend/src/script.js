@@ -1,5 +1,4 @@
 import { startTrainAnimation } from './train-loader.js';
-
 import { renderCardTemplate } from './render-card-template.js';
 
 // Get references to the station input elements
@@ -7,7 +6,6 @@ const startInput = document.getElementById('start-station');
 const endInput = document.getElementById('end-station');
 
 function renderJourneyData (data) {
-    console.log('render dummy')
     const elWrapper = document.getElementById('journey-result-wrapper');
     data.forEach(stop => {
         const wrapperDiv = document.createElement('div');
@@ -24,11 +22,16 @@ document.getElementById('search-journey').addEventListener('click', async () => 
         return;
     }
 
-    // on click loader animation
+    // DOM clean up on click
+    // 1. clear input field
+    startInput.value = '';
+    endInput.value = '';
+    
+    // 2. loader animation
     document.getElementById('train-loader').style.display = 'block';
     startTrainAnimation('train-loader');
     
-    // remove existing journey result
+    // 3. prevent duplicate/historic displays
     const existingResults = document.getElementsByClassName('info-card-wrapper');
     console.log(existingResults.length)
     if (existingResults.length > 0) {
@@ -36,21 +39,12 @@ document.getElementById('search-journey').addEventListener('click', async () => 
     }
 
     try {
-        // clear input field
-        startInput.value = '';
-        endInput.value = '';
-
         fetch(`api/tfl/journey/${from}/to/${to}`)
         .then(response => response.json())
         .then(data => {
-            console.log('search-journey, then block, before data handling')
             renderJourneyData(data);
             document.getElementById('train-loader').style.display = 'none';
         })
-        // Once fetch is initiated, hide the intro placeholder
-        // this will get excuted befor the .then block
-        document.querySelector('.display-box').style.display = 'block';
-        // need to insert display for loader animation
     } catch (error) {
         console.log(error)
     }
@@ -196,87 +190,3 @@ function createNotiBox(parentEl, selfId, msgText){
     })
 });
 
-
-// document.addEventListener('DOMContentLoaded', () => {
-//   const promptInput = document.getElementById('prompt-input');
-//   const submitButton = document.getElementById('submit-prompt');
-//   const responseContainer = document.getElementById('response-container');
-//   const loader = document.getElementById('loader');
-
-//   submitButton.addEventListener('click', async () => {
-//     const prompt = promptInput.value;
-//     if (!prompt) {
-//       alert('Please enter a prompt.');
-//       return;
-//     }
-
-//     loader.style.display = 'block';
-//     responseContainer.innerHTML = '';
-
-//     try {
-//       const response = await fetch('/api/openai', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ prompt }),
-//       });
-
-//       if (!response.ok) {
-//         throw new Error('Failed to get response from the server.');
-//       }
-
-//       const data = await response.json();
-//       const message = data.message.content;
-//       responseContainer.textContent = message;
-//       responseContainer.style.color = 'black';
-//     } catch (error) {
-//       responseContainer.textContent = error.message;
-//       responseContainer.style.color = 'red';
-//     } finally {
-//       loader.style.display = 'none';
-//     }
-//   });
-// });
-
-// document.addEventListener('DOMContentLoaded', () => {
-//   const stopsInput = document.getElementById('prompt-input');
-//   const submitButton = document.getElementById('submit-prompt');
-//   const responseContainer = document.getElementById('response-container');
-//   const loader = document.getElementById('loader');
-
-//   submitButton.addEventListener('click', async () => {
-//     const stopsRaw = stopsInput.value;
-//     if (!stopsRaw.trim()) {
-//       alert('Please enter one or more stops separated by commas.');
-//       return;
-//     }
-
-//     // Convert the textarea value to a clean array of stops
-//     const stops = stopsRaw.split(',')
-//       .map(stop => stop.trim())
-//       .filter(Boolean);
-
-//     loader.style.display = 'block';
-//     responseContainer.innerHTML = '';
-
-//     try {
-//       const response = await fetch('/api/openai', {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ stops }),
-//       });
-
-//       if (!response.ok) {
-//         throw new Error('Failed to get response from the server.');
-//       }
-
-//       const data = await response.json();
-//       responseContainer.innerHTML = `<p>${data.suggestions}</p>`;
-//     } catch (error) {
-//       responseContainer.innerHTML = `<p style="color: red;">${error.message}</p>`;
-//     } finally {
-//       loader.style.display = 'none';
-//     }
-//   });
-// });
