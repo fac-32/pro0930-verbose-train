@@ -34,6 +34,7 @@ document.getElementById('search-journey').addEventListener('click', async () => 
     endInput.value = '';
     
     // 2. loader animation
+    document.getElementById('journey-result-container').style.display = 'block';
     document.getElementById('train-loader').style.display = 'block';
     startTrainAnimation('train-loader');
     

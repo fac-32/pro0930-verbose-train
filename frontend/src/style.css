@@ -78,6 +78,10 @@ input {
     color: var(--background-color);
 }
 
+#journey-result-container {
+    display: none;
+}
+
 .info-card-main {
     text-align: left;
     background-color: var(--background-color);
