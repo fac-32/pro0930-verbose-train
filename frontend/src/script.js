@@ -7,60 +7,7 @@ import { renderCardTemplate } from './render-card-template.js';
 const startInput = document.getElementById('start-station');
 const endInput = document.getElementById('end-station');
 
-// dummy data for journey result rendering
-const DUMMY = [
-    {
-        commonName: 'Oxford Circus Underground Station',
-        id: '940GZZLUOXC',
-        icsId: '1000173',
-        lat: 51.515224,
-        lon: -0.141903,
-        pointsOfInterest: [
-            {
-                name: 'Oxford Circus 1',
-                description: 'description 1'
-            },
-            {
-                name: 'Oxford Circus 2',
-                description: 'description 2'
-            }
-        ]
-    },
-    {
-        commonName: 'Green Park Underground Station',
-        naptanId: '940GZZLUGPK',
-        lat: 51.506947,
-        lon: -0.142787,
-        pointsOfInterest: [
-            {
-                name: 'Green Park 1',
-                description: 'description 3'
-            },
-            {
-                name: 'Green Park 2',
-                description: 'description 4'
-            }
-        ]
-    },
-    {
-        commonName: 'Victoria',
-        naptanId: 'HUBVIC',
-        lat: 51.495812,
-        lon: -0.143826,
-        pointsOfInterest: [
-            {
-                name: 'Victoria 1',
-                description: 'descriptiption 5'
-            },
-            {
-                name: 'Victoria 2',
-                description: 'descriptiption 6'
-            }
-        ]
-    },
-]
-
-function renderDummy (data) {
+function renderJourneyData (data) {
     console.log('render dummy')
     const elWrapper = document.getElementById('journey-result-wrapper');
     data.forEach(stop => {
@@ -68,7 +15,6 @@ function renderDummy (data) {
         elWrapper.appendChild(renderCardTemplate(wrapperDiv, stop));
     })
 }
-renderDummy(DUMMY)
 
 document.getElementById('search-journey').addEventListener('click', async () => {
     // validation: check for input on both fields
@@ -92,9 +38,7 @@ document.getElementById('search-journey').addEventListener('click', async () => 
         .then(response => response.json())
         .then(data => {
             console.log('search-journey, then block, before data handling')
-            // console.log(data);
-            appendDisplayChild('tfl-display', 'tfl-ul', renderJourneyData(data));
-            // appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
+            renderJourneyData(data);
         })
         // Once fetch is initiated, hide the intro placeholder
         // this will get excuted befor the .then block
@@ -104,22 +48,6 @@ document.getElementById('search-journey').addEventListener('click', async () => 
         console.log(error)
     }
 })
-
-function renderJourneyData(data) {
-    return data.map(station => station.commonName);
-}
-
-function appendDisplayChild (parentId, childId, journeyArray) {
-    const childWrapper = document.createElement('ul');
-    childWrapper.id = childId;
-    journeyArray.forEach(stop => {
-        const listItem = document.createElement('li');
-        listItem.textContent = stop;
-        childWrapper.appendChild(listItem);
-    })
-    const parentEl = document.getElementById(parentId);
-    parentEl.appendChild(childWrapper);
-}
 
 // Debounce function to prevent excessive API calls
 // This creates a delay between user typing and API call

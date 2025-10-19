@@ -26,17 +26,29 @@ export function renderCardTemplate(rootElement, data) {
     lineName.style.color = `var(--${DUMMY_LINE}-text)`;
 
     const p14tWrapper = clone.querySelector('.pts-of-interest-wrapper')
-    data.pointsOfInterest.forEach(point => {
+    // data.pointsOfInterest.forEach(point => {
+    //     const cardDiv = document.createElement('div');
+    //     cardDiv.className = 'point-of-interest-card';
+    //     const h4 = document.createElement('h4');
+    //     h4.textContent = point.name;
+    //     cardDiv.appendChild(h4);
+    //     const p = document.createElement('p');
+    //     p.textContent = point.description;
+    //     cardDiv.appendChild(p);
+    //     p14tWrapper.appendChild(cardDiv);
+    // })
+    for (let i = 0; i < 4; i++) {
+        // dummy render becasue real data doesn't have points-of-interest property yet
         const cardDiv = document.createElement('div');
         cardDiv.className = 'point-of-interest-card';
         const h4 = document.createElement('h4');
-        h4.textContent = point.name;
+        h4.textContent = `${trimCommonName(data.commonName)} point of interest ${i} name`;
         cardDiv.appendChild(h4);
         const p = document.createElement('p');
-        p.textContent = point.description;
+        p.textContent = `${trimCommonName(data.commonName)} point of interest ${i} description`;
         cardDiv.appendChild(p);
         p14tWrapper.appendChild(cardDiv);
-    })
+    }
 
 
     frag.appendChild(clone);
