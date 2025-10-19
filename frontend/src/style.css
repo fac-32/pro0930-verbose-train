@@ -94,6 +94,10 @@ input {
     grid-template-columns: 1fr 1fr;
 }
 
+#train-loader {
+    display: none;
+}
+
 .point-of-interest-card {
     background-color: var(--secondary-background-color);
     padding: 1em;

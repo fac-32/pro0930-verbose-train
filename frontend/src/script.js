@@ -1,5 +1,4 @@
-// import { startTrainAnimation } from './train-loader.js';
-// startTrainAnimation('train-loader');
+import { startTrainAnimation } from './train-loader.js';
 
 import { renderCardTemplate } from './render-card-template.js';
 
@@ -24,21 +23,29 @@ document.getElementById('search-journey').addEventListener('click', async () => 
         alert('Please select both a start and end station from the dropdowns.');
         return;
     }
+
+    // on click loader animation
+    document.getElementById('train-loader').style.display = 'block';
+    startTrainAnimation('train-loader');
     
+    // remove existing journey result
+    const existingResults = document.getElementsByClassName('info-card-wrapper');
+    console.log(existingResults.length)
+    if (existingResults.length > 0) {
+        Array.from(existingResults).forEach(el => { el.remove(); })
+    }
+
     try {
         // clear input field
         startInput.value = '';
         endInput.value = '';
 
-        // remove existing journey result
-        const existingResults = document.getElementById('tfl-ul');
-        if (existingResults) existingResults.remove();
-        
         fetch(`api/tfl/journey/${from}/to/${to}`)
         .then(response => response.json())
         .then(data => {
             console.log('search-journey, then block, before data handling')
             renderJourneyData(data);
+            document.getElementById('train-loader').style.display = 'none';
         })
         // Once fetch is initiated, hide the intro placeholder
         // this will get excuted befor the .then block

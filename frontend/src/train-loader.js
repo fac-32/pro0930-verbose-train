@@ -1,7 +1,7 @@
 // trainAnimation.js
 
 export function startTrainAnimation(canvasId) {
-        console.log('Starting train animation on canvas:', canvasId);
+    console.log('Starting train animation on canvas:', canvasId);
     const canvas = document.getElementById(canvasId);
     if (!canvas) {
         console.error(`Canvas with id "${canvasId}" not found.`);
