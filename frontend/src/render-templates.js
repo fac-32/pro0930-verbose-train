@@ -51,6 +51,39 @@ export function renderCardTemplate(rootElement, data) {
     return rootElement; 
 }
 
+export function renderJouenryHeaderTemplate(rootElement, data) {
+    const tpl = document.getElementById('journey-header-tpl');
+
+    // clear or keep: here we clear then append
+    rootElement.innerHTML = '';
+    const frag = document.createDocumentFragment();
+
+    // deep copy of template clone with all child elements inside template
+    const clone = tpl.content.cloneNode(true);
+    
+    const startName = trimCommonName(data[0].commonName);
+    const endName = trimCommonName(data[data.length - 1].commonName);
+    clone.getElementById('end-points-meta').textContent = `${startName} to ${endName}`;
+
+    const stopCount = data.length;
+    clone.getElementById('stop-count').textContent = stopCount;
+    
+    clone.getElementById('duration').textContent = 'MAGIC';
+
+    const lineCount = new Set(data.map(stop => stop.line));
+    if (lineCount.length === 1) {
+        clone.getElementById('line').textContent = lineCount[0];
+    } else {
+        let concatNames = '';
+        lineCount.forEach(line => { concatNames += (`${line} → `) });
+        clone.getElementById('line').textContent = concatNames.slice(0, concatNames.length - 3);
+    }
+
+    frag.appendChild(clone);
+    rootElement.appendChild(frag);
+    return rootElement; 
+}
+
 function trimCommonName(name) {
     const phrase = ' Underground Station';
     if (name.endsWith(phrase)) {

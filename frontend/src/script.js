@@ -1,5 +1,5 @@
 import { startTrainAnimation } from './train-loader.js';
-import { renderCardTemplate } from './render-templates.js';
+import { renderCardTemplate, renderJouenryHeaderTemplate } from './render-templates.js';
 
 // Get references to the station input elements
 const startInput = document.getElementById('start-station');
@@ -12,6 +12,35 @@ function renderJourneyData (data) {
         elWrapper.appendChild(renderCardTemplate(wrapperDiv, stop));
     })
 }
+
+// dummy data for journey result rendering
+const DUMMY = [
+    {
+        commonName: 'Oxford Circus Underground Station',
+        pointsOfInterest: [{ name: 'Oxford Circus 1', description: 'description 1'}, { name: 'Oxford Circus 2', description: 'description 2'}],
+        arrivalTime: "15:39",
+        line: 'Victoria'
+    },
+    {
+        commonName: 'Green Park Underground Station',
+        pointsOfInterest: [{ name: 'Green Park 1', description: 'description 3'}, { name: 'Green Park 2', description: 'description 4'}],
+        line: 'Victoria'
+    },
+    {
+        commonName: 'Victoria',
+        pointsOfInterest: [{ name: 'Victoria 1', description: 'descriptiption 5'}, { name: 'Victoria 2', description: 'descriptiption 6'}],
+        arrivalTime: "16:00",
+        line: 'Picadilly'
+    },
+]
+
+function renderJourneyHeader (data) {
+    const elWrapper = document.getElementById('journey-result-wrapper');
+    const wrapperDiv = document.createElement('div');
+    elWrapper.appendChild(renderJouenryHeaderTemplate(wrapperDiv, data));
+}
+
+renderJourneyHeader(DUMMY);
 
 document.getElementById('search-journey').addEventListener('click', async () => {
     // validation: check for input on both fields
