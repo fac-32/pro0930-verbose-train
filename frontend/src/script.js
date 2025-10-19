@@ -79,25 +79,19 @@ async function handleFuzzySearch(inputElement, searchTerm) {
         return;
     }
     
-    try {
-        fetch(`/api/suggest-stations`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({searchTerm}),
-        })
-        .then(response => response.json())
-        .then(data => {
-            // console.log('handle fuzzy search, then block, before data handling')
-            // console.log(data.suggestions);
-            if (data.suggestions.length === 0) {
-                createNotiBox(inputElement, 'user-typo', "We couldn't find anything. Did you make a typo?");
-                return
-            }
-            showSuggestions(inputElement, data.suggestions);
-        })
-    } catch (error) {
-        console.error('Fuzzy search error:', error);
-    }
+    fetch(`/api/suggest-stations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({searchTerm}),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.suggestions.length === 0) {
+            createNotiBox(inputElement, 'user-typo', "We couldn't find anything. Did you make a typo?");
+            return
+        }
+        showSuggestions(inputElement, data.suggestions);
+    })
 }
 
 function trimCommonName(name) {
