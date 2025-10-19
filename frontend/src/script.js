@@ -1,13 +1,11 @@
-import { startTrainAnimation } from './train-loader.js';
-startTrainAnimation('train-loader');
+// import { startTrainAnimation } from './train-loader.js';
+// startTrainAnimation('train-loader');
 
 // Get references to the station input elements
 const startInput = document.getElementById('start-station');
 const endInput = document.getElementById('end-station');
 
 document.getElementById('search-journey').addEventListener('click', async () => {
-    console.log('button clicked');
-
     // validation: check for input on both fields
     const from = startInput.dataset.searchableName;
     const to = endInput.dataset.searchableName;
@@ -17,80 +15,46 @@ document.getElementById('search-journey').addEventListener('click', async () => 
     }
     
     try {
-        // the server should return 1. the whole journey with stops, and 2. the Open ai suggestions
-        // presuming the response/data from the server is in an object
-        console.log(`From: ${from}, To: ${to}`);
+        // clear input field
+        startInput.value = '';
+        endInput.value = '';
+
+        // remove existing journey result
+        const existingResults = document.getElementById('tfl-ul');
+        if (existingResults) existingResults.remove();
+        
         fetch(`api/tfl/journey/${from}/to/${to}`)
         .then(response => response.json())
         .then(data => {
             console.log('search-journey, then block, before data handling')
             // console.log(data);
-            document.getElementById('intro-placeholder').style.display = 'none';
-            appendDisplayChild('tfl-display', 'tfl-p', renderJourneyData(data));
+            appendDisplayChild('tfl-display', 'tfl-ul', renderJourneyData(data));
             // appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
         })
+        // Once fetch is initiated, hide the intro placeholder
+        // this will get excuted befor the .then block
+        document.querySelector('.display-box').style.display = 'block';
+        // need to insert display for loader animation
     } catch (error) {
         console.log(error)
     }
 })
 
 function renderJourneyData(data) {
-    // keep for reference
-    // return data.map(station => `<p>${station.commonName} (${station.naptanId}) - Lat: ${station.lat}, Lon: ${station.lon}</p>`).join('');
     return data.map(station => station.commonName);
 }
 
-function appendDisplayChild (parentId, childId, textContent) {
-    const childP = document.createElement('p');
-    childP.id = childId;
-    childP.textContent = textContent;
+function appendDisplayChild (parentId, childId, journeyArray) {
+    const childWrapper = document.createElement('ul');
+    childWrapper.id = childId;
+    journeyArray.forEach(stop => {
+        const listItem = document.createElement('li');
+        listItem.textContent = stop;
+        childWrapper.appendChild(listItem);
+    })
     const parentEl = document.getElementById(parentId);
-    parentEl.style.display = 'block';
-    parentEl.appendChild(childP);
+    parentEl.appendChild(childWrapper);
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  const promptInput = document.getElementById('prompt-input');
-  const submitButton = document.getElementById('submit-prompt');
-  const responseContainer = document.getElementById('response-container');
-  const loader = document.getElementById('loader');
-
-  submitButton.addEventListener('click', async () => {
-    const prompt = promptInput.value;
-    if (!prompt) {
-      alert('Please enter a prompt.');
-      return;
-    }
-
-    loader.style.display = 'block';
-    responseContainer.innerHTML = '';
-
-    try {
-      const response = await fetch('/api/openai', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to get response from the server.');
-      }
-
-      const data = await response.json();
-      const message = data.message.content;
-      responseContainer.textContent = message;
-      responseContainer.style.color = 'black';
-    } catch (error) {
-      responseContainer.textContent = error.message;
-      responseContainer.style.color = 'red';
-    } finally {
-      loader.style.display = 'none';
-    }
-  });
-});
-
 
 // Debounce function to prevent excessive API calls
 // This creates a delay between user typing and API call
@@ -120,12 +84,9 @@ async function handleFuzzySearch(inputElement, searchTerm) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({searchTerm}),
-
         })
         .then(response => response.json())
         .then(data => {
-            // console.log('handle fuzzy search, then block, before data handling')
-            // console.log(data.suggestions);
             showSuggestions(inputElement, data.suggestions);
         })
     } catch (error) {
@@ -143,7 +104,6 @@ function trimCommonName(name) {
 
 // Function to display suggestion dropdown
 function showSuggestions(inputElement, suggestions) {
-    console.log('show suggestions function');
     // Remove existing dropdown if any
     const existingDropdown = inputElement.parentElement.querySelector('.suggestions-dropdown');
     if (existingDropdown) existingDropdown.remove();
@@ -212,6 +172,49 @@ function createInvalidCharNotiBox(parentEl){
         debouncedSearch(e.target, searchTerm);
     });
 });
+
+
+// document.addEventListener('DOMContentLoaded', () => {
+//   const promptInput = document.getElementById('prompt-input');
+//   const submitButton = document.getElementById('submit-prompt');
+//   const responseContainer = document.getElementById('response-container');
+//   const loader = document.getElementById('loader');
+
+//   submitButton.addEventListener('click', async () => {
+//     const prompt = promptInput.value;
+//     if (!prompt) {
+//       alert('Please enter a prompt.');
+//       return;
+//     }
+
+//     loader.style.display = 'block';
+//     responseContainer.innerHTML = '';
+
+//     try {
+//       const response = await fetch('/api/openai', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ prompt }),
+//       });
+
+//       if (!response.ok) {
+//         throw new Error('Failed to get response from the server.');
+//       }
+
+//       const data = await response.json();
+//       const message = data.message.content;
+//       responseContainer.textContent = message;
+//       responseContainer.style.color = 'black';
+//     } catch (error) {
+//       responseContainer.textContent = error.message;
+//       responseContainer.style.color = 'red';
+//     } finally {
+//       loader.style.display = 'none';
+//     }
+//   });
+// });
 
 // document.addEventListener('DOMContentLoaded', () => {
 //   const stopsInput = document.getElementById('prompt-input');
