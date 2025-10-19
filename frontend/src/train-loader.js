@@ -57,7 +57,7 @@ export function startTrainAnimation(canvasId) {
         });
         }
 
-        trainX -= canvas.width * 0.02; // speed scales with canvas size
+        trainX -= canvas.width * 0.01; // speed scales with canvas size
 
         // Reset train when off-screen
         if (trainX < -60) {
