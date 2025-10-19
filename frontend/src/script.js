@@ -1,5 +1,6 @@
 import { startTrainAnimation } from './train-loader.js';
 import { renderCardTemplate, renderJouenryHeaderTemplate } from './render-templates.js';
+import { DUMMY } from './dummy.js';
 
 // Get references to the station input elements
 const startInput = document.getElementById('start-station');
@@ -47,17 +48,22 @@ document.getElementById('search-journey').addEventListener('click', async () => 
     const journeyMeta = document.querySelector('.joruney-header-wrapper');
     if (journeyMeta) journeyMeta.remove();
 
-    try {
-        fetch(`api/tfl/journey/${from}/to/${to}`)
-        .then(response => response.json())
-        .then(data => {
-            renderJourneyData(data);
-            renderJourneyHeader(data);
-            document.getElementById('train-loader').style.display = 'none';
-        })
-    } catch (error) {
-        console.log(error)
-    }
+    // dummy replication of real fetch and data processing
+    renderJourneyData(DUMMY);
+    renderJourneyHeader(DUMMY);
+    document.getElementById('train-loader').style.display = 'none';
+
+    // try {
+    //     fetch(`api/tfl/journey/${from}/to/${to}`)
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         renderJourneyData(data);
+    //         renderJourneyHeader(data);
+    //         document.getElementById('train-loader').style.display = 'none';
+    //     })
+    // } catch (error) {
+    //     console.log(error)
+    // }
 })
 
 // Debounce function to prevent excessive API calls
