@@ -94,6 +94,14 @@ input {
     grid-template-columns: 1fr 1fr;
 }
 
+canvas {
+    background-color: var(--secondary-background-color);
+    border: none;
+    width: 60%;
+    height: 4em;
+    margin: 0 auto;
+}
+
 #train-loader {
     display: none;
 }
@@ -154,13 +162,6 @@ button:hover {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-}
-
-canvas {
-    background: #cceeff;
-    border: 2px solid #333;
-    width: 60%;
-    height: 2em;
 }
 
 .custom-pop-up-message {
