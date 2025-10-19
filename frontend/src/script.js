@@ -44,6 +44,8 @@ document.getElementById('search-journey').addEventListener('click', async () => 
     if (existingResults.length > 0) {
         Array.from(existingResults).forEach(el => { el.remove(); })
     }
+    const journeyMeta = document.querySelector('.joruney-header-wrapper');
+    if (journeyMeta) journeyMeta.remove();
 
     try {
         fetch(`api/tfl/journey/${from}/to/${to}`)
