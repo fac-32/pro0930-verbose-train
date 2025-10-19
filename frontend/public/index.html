@@ -49,18 +49,20 @@
     <div class="container">
         <canvas id="train-loader"></canvas>
         <div id="journey-result-wrapper">
-            <template id="journey-header-tpl">
-                <div class="joruney-header-wrapper">
-                    <h2 id="end-points-meta"></h2>
-                    <div class="stops-duration-lines-meta">
-                        <span id="stop-count"></span>&nbsp;stops
-                        &nbsp;•&nbsp;
-                        <span id="duration"></span>&nbsp;minutes
-                        &nbsp;•&nbsp;
-                        <span id="line"></span>&nbsp;Line(s)
+            <div id="header-tpl-wrapper">
+                <template id="journey-header-tpl">
+                    <div class="joruney-header-wrapper">
+                        <h2 id="end-points-meta"></h2>
+                        <div class="stops-duration-lines-meta">
+                            <span id="stop-count"></span>&nbsp;stops
+                            &nbsp;•&nbsp;
+                            <span id="duration"></span>&nbsp;minutes
+                            &nbsp;•&nbsp;
+                            <span id="line"></span>&nbsp;Line(s)
+                        </div>
                     </div>
-                </div>
-            </template>
+                </template>
+            </div>
             <!-- this is a guideline to what element should be created in render 
                 <div
                     class="info-card-wrapper"
@@ -74,15 +76,17 @@
                     />
                 </div> 
             -->
-            <template id="info-card-tpl">
-                <div class="info-card-wrapper">
-                    <div class="info-card-main">
-                        <h2 class="stop-name"></h2>
-                        <h3 class="line-name"></h3>
-                        <div class="pts-of-interest-wrapper"></div>
+            <div id="card-tpl-wrapper">
+                <template id="info-card-tpl">
+                    <div class="info-card-wrapper">
+                        <div class="info-card-main">
+                            <h2 class="stop-name"></h2>
+                            <h3 class="line-name"></h3>
+                            <div class="pts-of-interest-wrapper"></div>
+                        </div>
                     </div>
-                </div>
-            </template>
+                </template>
+            </div>
         </div>
     </div>
     
