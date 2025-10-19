@@ -3,6 +3,7 @@ import express from 'express';
 const router = express.Router();
 import { getExampleData } from '../controllers/exampleController.js';
 import { getOpenAIResponse } from '../controllers/openAIController.js';
+import { getChatbotResponse } from '../controllers/chatbotController.js';
 import { 
     getJourney, 
     getJourneyWithAI, 
@@ -14,6 +15,9 @@ router.get('/hello', getExampleData);
 
 // Route for OpenAI
 router.post('/openai', getOpenAIResponse);
+
+// Route for Chatbot
+router.post('/chatbot', getChatbotResponse);
 
 // Routes for TfL
 

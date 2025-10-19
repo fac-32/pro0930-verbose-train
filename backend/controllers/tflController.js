@@ -1,11 +1,7 @@
 console.log('Loading: controllers/tflController.js');
 import * as tflservice from '../services/tflservice.js';
 import googleMapsService from '../services/googleMapsService.js';
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+import openai from '../lib/OpenAIClient.js';
 
 //justin code
 const date = 20251016
