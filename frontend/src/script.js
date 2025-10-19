@@ -1,5 +1,5 @@
 import { startTrainAnimation } from './train-loader.js';
-import { renderCardTemplate } from './render-card-template.js';
+import { renderCardTemplate } from './render-templates.js';
 
 // Get references to the station input elements
 const startInput = document.getElementById('start-station');

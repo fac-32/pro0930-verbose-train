@@ -49,6 +49,18 @@
     <div class="container">
         <canvas id="train-loader"></canvas>
         <div id="journey-result-wrapper">
+            <template id="journey-header-tpl">
+                <div class="joruney-header-wrapper">
+                    <h2 class="end-points-meta"></h2>
+                    <div class="stops-duration-lines-meta">
+                        <span id="stop-count"></span>
+                        &nbsp;•&nbsp;
+                        <span id="duration"></span>&nbsp;minutes
+                        &nbsp;•&nbsp;
+                        <span id="line"></span>&nbsp;Line(s)
+                    </div>
+                </div>
+            </template>
             <!-- this is a guideline to what element should be created in render 
                 <div
                     class="info-card-wrapper"
