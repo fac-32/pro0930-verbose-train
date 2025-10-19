@@ -33,7 +33,7 @@ export function renderCardTemplate(rootElement, data) {
     //     cardDiv.appendChild(p);
     //     p14tWrapper.appendChild(cardDiv);
     // })
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 2; i++) {
         // dummy render becasue real data doesn't have points-of-interest property yet
         const cardDiv = document.createElement('div');
         cardDiv.className = 'point-of-interest-card';
@@ -41,7 +41,7 @@ export function renderCardTemplate(rootElement, data) {
         h4.textContent = `${trimCommonName(data.commonName)} point of interest ${i} name`;
         cardDiv.appendChild(h4);
         const p = document.createElement('p');
-        p.textContent = `${trimCommonName(data.commonName)} point of interest ${i} description`;
+        p.textContent = `${trimCommonName(data.commonName)} point of interest ${i} description, Experience seamless performance with our latest update. Designed for everyday use, it’s reliable, intuitive, and built to keep you productive across all your devices. Try now.`;
         cardDiv.appendChild(p);
         p14tWrapper.appendChild(cardDiv);
     }

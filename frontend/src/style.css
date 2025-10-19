@@ -107,6 +107,7 @@ input {
     padding: 1em;
     margin: 0 1em 5px 0;
     border-radius: 8px;
+    text-wrap: pretty;
 }
 
 canvas {
