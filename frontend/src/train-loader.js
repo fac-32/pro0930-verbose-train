@@ -18,7 +18,7 @@ export function startTrainAnimation(canvasId) {
     function resizeCanvas() {
         canvas.width = canvas.clientWidth;
         canvas.height = canvas.clientHeight;
-        trainY = canvas.height * 0.6;
+        trainY = canvas.height * 0.8;
         trainX = canvas.width + 60;
     }
 

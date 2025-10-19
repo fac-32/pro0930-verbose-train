@@ -16,23 +16,17 @@ document.getElementById('search-journey').addEventListener('click', async () => 
         return;
     }
     
-    try {
-        // the server should return 1. the whole journey with stops, and 2. the Open ai suggestions
-        // presuming the response/data from the server is in an object
-        console.log(`From: ${from}, To: ${to}`);
-        fetch(`api/tfl/journey/${from}/to/${to}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log('search-journey, then block, before data handling')
-            // console.log(data);
-            document.getElementById('intro-placeholder').style.display = 'none';
-            appendDisplayChild('tfl-display', 'tfl-p', renderJourneyData(data));
-            // appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
-        })
-    } catch (error) {
-        console.log(error)
-    }
-})
+    const tubeFrame = document.getElementById('tube-frame');
+    tubeFrame.style.display = 'block';
+
+    const message = {
+        type: 'journeySearch',
+        from: from,
+        to: to
+    };
+
+    tubeFrame.contentWindow.postMessage(message, '*');
+});
 
 function renderJourneyData(data) {
     // keep for reference
@@ -50,45 +44,69 @@ function appendDisplayChild (parentId, childId, textContent) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const promptInput = document.getElementById('prompt-input');
-  const submitButton = document.getElementById('submit-prompt');
-  const responseContainer = document.getElementById('response-container');
-  const loader = document.getElementById('loader');
+    const chatWindow = document.getElementById('chat-window');
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+    const chatbotToggleButton = document.getElementById('chatbot-toggle-button');
+    const chatbotContainer = document.querySelector('.tube-chatbot-container');
 
-  submitButton.addEventListener('click', async () => {
-    const prompt = promptInput.value;
-    if (!prompt) {
-      alert('Please enter a prompt.');
-      return;
+    const chatIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>';
+    const closeIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+
+    chatbotToggleButton.innerHTML = chatIcon;
+
+    chatbotToggleButton.addEventListener('click', () => {
+        const isVisible = chatbotContainer.classList.toggle('visible');
+        chatbotToggleButton.innerHTML = isVisible ? closeIcon : chatIcon;
+    });
+
+    const appendMessage = (sender, text) => {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', `${sender}-message`);
+        messageElement.innerText = text;
+        chatWindow.appendChild(messageElement);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        return messageElement;
     }
 
-    loader.style.display = 'block';
-    responseContainer.innerHTML = '';
+    chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const messageText = userInput.value.trim();
+        if (messageText === '') return;
 
-    try {
-      const response = await fetch('/api/openai', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt }),
-      });
+        appendMessage('user', messageText);
+        userInput.value = '';
 
-      if (!response.ok) {
-        throw new Error('Failed to get response from the server.');
-      }
+        const thinkingMessage = appendMessage('bot', '');
+        thinkingMessage.classList.add('thinking');
+        thinkingMessage.innerHTML = '<span>.</span><span>.</span><span>.</span>';
 
-      const data = await response.json();
-      const message = data.message.content;
-      responseContainer.textContent = message;
-      responseContainer.style.color = 'black';
-    } catch (error) {
-      responseContainer.textContent = error.message;
-      responseContainer.style.color = 'red';
-    } finally {
-      loader.style.display = 'none';
-    }
-  });
+        try {
+            const response = await fetch('/api/chatbot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ prompt: messageText }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to get response from the server.');
+            }
+
+            const data = await response.json();
+            const botResponse = data.message.content;
+
+            thinkingMessage.classList.remove('thinking');
+            thinkingMessage.innerText = botResponse;
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        } catch (error) {
+            thinkingMessage.classList.remove('thinking');
+            thinkingMessage.innerText = 'Sorry, something went wrong. Please try again.';
+            thinkingMessage.style.color = 'red';
+        }
+    });
 });
 
 
