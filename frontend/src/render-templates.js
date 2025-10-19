@@ -61,14 +61,21 @@ export function renderJouenryHeaderTemplate(rootElement, data) {
     // deep copy of template clone with all child elements inside template
     const clone = tpl.content.cloneNode(true);
     
-    const startName = trimCommonName(data[0].commonName);
-    const endName = trimCommonName(data[data.length - 1].commonName);
+    const start = data[0];
+    const end = data[data.length - 1]
+
+    const startName = trimCommonName(start.commonName);
+    const endName = trimCommonName(end.commonName);
     clone.getElementById('end-points-meta').textContent = `${startName} to ${endName}`;
 
     const stopCount = data.length;
     clone.getElementById('stop-count').textContent = stopCount;
     
-    clone.getElementById('duration').textContent = 'MAGIC';
+    // const duration = timeDiffInMin(start.arrivalTime, end.arrivalTime)
+    const dummyStart = "15:00";
+    const dummyEnd = "16:00";
+    const duration = timeDiffInMin(dummyStart, dummyEnd)
+    clone.getElementById('duration').textContent = duration;
 
     const lineCount = new Set(data.map(stop => stop.line));
     if (lineCount.length === 1) {
@@ -82,6 +89,16 @@ export function renderJouenryHeaderTemplate(rootElement, data) {
     frag.appendChild(clone);
     rootElement.appendChild(frag);
     return rootElement; 
+}
+
+function timeDiffInMin(time1, time2) {
+  const [h1, m1] = time1.split(':').map(Number);
+  const [h2, m2] = time2.split(':').map(Number);
+
+  const minutes1 = h1 * 60 + m1;
+  const minutes2 = h2 * 60 + m2;
+
+  return Math.abs(minutes2 - minutes1);
 }
 
 function trimCommonName(name) {
