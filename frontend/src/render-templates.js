@@ -8,18 +8,19 @@ export function renderCardTemplate(rootElement, data) {
     // deep copy of template clone with all child elements inside template
     const clone = tpl.content.cloneNode(true);
     
-    const DUMMY_LINE = randomLine();
+    const rawLine = data.line || randomLine();
+    const line = sanitizeLineName(rawLine);
 
     const cardMain = clone.querySelector('.info-card-main');
-    cardMain.style.borderLeft = `8px solid var(--${DUMMY_LINE})`;
+    cardMain.style.borderLeft = `8px solid var(--${line})`;
 
     const stopName = clone.querySelector('.stop-name');
     stopName.textContent = trimCommonName(data.commonName);
     
     const lineName = clone.querySelector('.line-name');
-    lineName.textContent = `${DUMMY_LINE} line`;
-    lineName.style.backgroundColor = `var(--${DUMMY_LINE})`;
-    lineName.style.color = `var(--${DUMMY_LINE}-text)`;
+    lineName.textContent = `${rawLine} line`;
+    lineName.style.backgroundColor = `var(--${line})`;
+    lineName.style.color = `var(--${line}-text)`;
 
     const p14tWrapper = clone.querySelector('.pts-of-interest-wrapper')
     data.placeOfInterest.forEach(point => {
@@ -56,7 +57,7 @@ export function renderJouenryHeaderTemplate(rootElement, data) {
     const endName = trimCommonName(end.commonName);
     clone.getElementById('end-points-meta').textContent = `${startName} to ${endName}`;
 
-    const stopCount = data.length;
+    const stopCount = data.length - 1;
     clone.getElementById('stop-count').textContent = stopCount;
     
     const duration = timeDiffInMin(start.arrivalTime, end.arrivalTime);
@@ -100,4 +101,9 @@ function randomLine() {
     const allLines = ['bakerloo', 'central', 'circle', 'district', 'hammersmith-city', 'jubilee', 'metropolitan', 'northern', 'piccadilly', 'victoria', 'waterloo-city'];
     const i = Math.floor(Math.random() * (allLines.length));
     return allLines[i];
+}
+
+function sanitizeLineName(lineName) {
+    if (!lineName) return '';
+    return lineName.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
 }
