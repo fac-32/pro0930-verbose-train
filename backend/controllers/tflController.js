@@ -171,6 +171,7 @@ try {
 
 const getStations = async (req, res) => {
   try {
+    const { from, to } = req.query;
     const data = await tflservice.TFLAPICall(from, to, time, date, type);
     res.json(data);
   } catch (error) {
@@ -252,7 +253,7 @@ const getJourneyWithAI = async (req, res) => {
 //--------------------------------------
 
 const suggestStations = async (req, res) => {
-  const stationName = req.body; // Reads "user station's name input" from the request body
+  const { stationName } = req.body; // Reads "user station's name input" from the request body
   try {
     const suggestions = await tflservice.getStationSuggestions(stationName, false); // flag to set to false for real API
     res.json({ suggestions }); // Sends suggestions back to the client
