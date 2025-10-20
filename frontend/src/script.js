@@ -1,6 +1,5 @@
 import { startTrainAnimation } from './train-loader.js';
 import { renderCardTemplate, renderJouenryHeaderTemplate } from './render-templates.js';
-import { DUMMY } from './dummy.js';
 
 // Get references to the station input elements
 const startInput = document.getElementById('start-station');
@@ -41,30 +40,16 @@ document.getElementById('search-journey').addEventListener('click', async () => 
     
     // 3. prevent duplicate/historic displays
     const existingResults = document.getElementsByClassName('info-card-wrapper');
-    console.log(existingResults.length)
     if (existingResults.length > 0) {
         Array.from(existingResults).forEach(el => { el.remove(); })
     }
     const journeyMeta = document.querySelector('.joruney-header-wrapper');
     if (journeyMeta) journeyMeta.remove();
 
-    // dummy replication of real fetch and data processing
-    // renderJourneyData(DUMMY);
-    // renderJourneyHeader(DUMMY);
-    // document.getElementById('train-loader').style.display = 'none';
-
-    // dummy to verify response data
-    // fetch(`api/tfl/journey/940GZZLUVIC/to/940GZZLUOXC`)
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         console.log(data);
-    //     })
-
     try {
         fetch(`api/tfl/journey/${from}/to/${to}`)
         .then(response => response.json())
         .then(data => {
-            console.log(data[0]);
             renderJourneyData(data);
             renderJourneyHeader(data);
             document.getElementById('train-loader').style.display = 'none';

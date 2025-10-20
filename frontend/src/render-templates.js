@@ -11,7 +11,7 @@ export function renderCardTemplate(rootElement, data) {
     const DUMMY_LINE = randomLine();
 
     const cardMain = clone.querySelector('.info-card-main');
-    cardMain.style.borderLeft = `4px solid var(--${DUMMY_LINE})`;
+    cardMain.style.borderLeft = `8px solid var(--${DUMMY_LINE})`;
 
     const stopName = clone.querySelector('.stop-name');
     stopName.textContent = trimCommonName(data.commonName);
@@ -33,18 +33,6 @@ export function renderCardTemplate(rootElement, data) {
         cardDiv.appendChild(p);
         p14tWrapper.appendChild(cardDiv);
     })
-    // for (let i = 0; i < 2; i++) {
-    //     // dummy render becasue real data doesn't have points-of-interest property yet
-    //     const cardDiv = document.createElement('div');
-    //     cardDiv.className = 'point-of-interest-card';
-    //     const h4 = document.createElement('h4');
-    //     h4.textContent = `${trimCommonName(data.commonName)} point of interest ${i} name`;
-    //     cardDiv.appendChild(h4);
-    //     const p = document.createElement('p');
-    //     p.textContent = `${trimCommonName(data.commonName)} point of interest ${i} description, Experience seamless performance with our latest update. Designed for everyday use, it’s reliable, intuitive, and built to keep you productive across all your devices. Try now.`;
-    //     cardDiv.appendChild(p);
-    //     p14tWrapper.appendChild(cardDiv);
-    // }
 
     frag.appendChild(clone);
     rootElement.appendChild(frag);
@@ -71,9 +59,6 @@ export function renderJouenryHeaderTemplate(rootElement, data) {
     const stopCount = data.length;
     clone.getElementById('stop-count').textContent = stopCount;
     
-    // const duration = timeDiffInMin(start.arrivalTime, end.arrivalTime)
-    // const dummyStart = "15:00";
-    // const dummyEnd = "16:00";
     const duration = timeDiffInMin(start.arrivalTime, end.arrivalTime);
     clone.getElementById('duration').textContent = duration;
 
