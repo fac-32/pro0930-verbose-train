@@ -13,13 +13,14 @@ const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 const time = new Date().toTimeString().slice(0, 5).replace(':', '');
 const type = 'stationSelect';
 
-const stationInfoBundler = (commonName, naptanId, lat, lon, arrivalTime) => {
+const stationInfoBundler = (commonName, naptanId, lat, lon, arrivalTime, line) => {
   return {
     commonName: commonName,
     lat: lat,
     lon: lon,
     naptanId: naptanId,
-    arrivalTime: arrivalTime || null
+    arrivalTime: arrivalTime || null,
+    line: line || null
   }
 }
 
@@ -33,8 +34,22 @@ const getJourney = async (req, res) => {
     let data = await tflservice.TFLAPICall(from, to, time, date, type);
     data = data.data
     console.log('success ftl journey fetch');
-    console.log(data);
-    
+
+    const stationIdToLine = {};
+    if (data.journeys && data.journeys.length > 0) {
+      data.journeys[0].legs.forEach(leg => {
+        const lineName = leg.routeOptions[0].name;
+        leg.path.stopPoints.forEach(stop => {
+          stationIdToLine[stop.id] = lineName;
+        });
+        if (leg.departurePoint) {
+          stationIdToLine[leg.departurePoint.naptanId] = lineName;
+        }
+        if (leg.arrivalPoint) {
+          stationIdToLine[leg.arrivalPoint.naptanId] = lineName;
+        }
+      });
+    }
 
     const allStops = [];
     let numberOfLegs = 0;
@@ -137,8 +152,9 @@ for (const station of allStops) {
       lon = fetchedStationLocation.lon;
     }
     
+    const line = stationIdToLine[naptanId];
     console.log('Adding station to journey:', commonName);
-    assembledJourney.push(stationInfoBundler(commonName, naptanId, lat, lon, arrivalTime));
+    assembledJourney.push(stationInfoBundler(commonName, naptanId, lat, lon, arrivalTime, line));
   } else {
     console.log('Skipped station (missing data):', station.commonName || station.name || 'unnamed');
   }
@@ -153,9 +169,15 @@ console.log('Raw OpenAI response length:', openAIResponse.length);
 console.log('Raw OpenAI response:', openAIResponse);
 console.log('OpenAI response received, assembledJourney length after:', assembledJourney.length);
 
+let cleanedResponse = openAIResponse.trim();
+if (cleanedResponse.startsWith('```json')) {
+    cleanedResponse = cleanedResponse.substring(7, cleanedResponse.length - 3);
+} else if (cleanedResponse.startsWith('```')) {
+    cleanedResponse = cleanedResponse.substring(3, cleanedResponse.length - 3);
+}
 
 try {
-  const enhancedJourney = JSON.parse(openAIResponse);
+  const enhancedJourney = JSON.parse(cleanedResponse);
   console.log('Successfully parsed OpenAI response, sending enhanced journey with', enhancedJourney.length, 'stations');
   res.json(enhancedJourney);
 } catch (parseError) {
@@ -171,6 +193,7 @@ try {
 
 const getStations = async (req, res) => {
   try {
+    const { from, to } = req.query;
     const data = await tflservice.TFLAPICall(from, to, time, date, type);
     res.json(data);
   } catch (error) {
@@ -252,9 +275,9 @@ const getJourneyWithAI = async (req, res) => {
 //--------------------------------------
 
 const suggestStations = async (req, res) => {
-  const stationName = req.body; // Reads "user station's name input" from the request body
+  const { searchTerm } = req.body; // Reads "user station's name input" from the request body
   try {
-    const suggestions = await tflservice.getStationSuggestions(stationName, false); // flag to set to false for real API
+    const suggestions = await tflservice.getStationSuggestions(searchTerm, false); // flag to set to false for real API
     res.json({ suggestions }); // Sends suggestions back to the client
   } catch (error) {
     res.status(500).json({ message: 'Error fetching station suggestions', error: error.message });
