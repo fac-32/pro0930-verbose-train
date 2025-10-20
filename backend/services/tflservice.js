@@ -1,3 +1,4 @@
+/* eslint-env node */
 console.log('Loading: services/tflservice.js');
 // Import dotenv to load environment variables from .env file
 import dotenv from 'dotenv';
@@ -124,7 +125,7 @@ const TFLAPICall = async (from, to, time, date) => {
 
     try {
       data = JSON.parse(responseText);
-    } catch (err) {
+    } catch {
       // fallback: keep raw text if JSON parse fails
       data = responseText;
     }
@@ -196,7 +197,9 @@ export async function getStationSuggestions(stationName, simulate = false) {
         return returnData;
     }
 
-  } catch (error) {
+    return []; // Return an empty array if status is not 200
+
+  } catch {
     // On error, return dummy data for development
     return [
       { name: 'Oxford Circus Underground Station' },

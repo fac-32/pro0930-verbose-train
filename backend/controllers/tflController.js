@@ -193,6 +193,7 @@ try {
 
 const getStations = async (req, res) => {
   try {
+    const { from, to } = req.query;
     const data = await tflservice.TFLAPICall(from, to, time, date, type);
     res.json(data);
   } catch (error) {
