@@ -124,7 +124,7 @@ function showSuggestions(inputElement, suggestions) {
         suggestion.dataset.searchableName = station.icsId;
         
         // Handle click on suggestion
-        suggestion.addEventListener('click', () => {
+        suggestion.addEventListener('mousedown', () => {
             inputElement.value = trimCommonName(station.name);
             // Store icsId under dataset attribute and used for journey search
             // trimming down display name shouldn't affect the actual search

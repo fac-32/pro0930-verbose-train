@@ -51,6 +51,7 @@ h2 {
 
 .station-input {
     padding: 2%;
+    position: relative;
 }
 
 input {
@@ -67,6 +68,9 @@ input {
     max-height: 6em;
     overflow-y: auto;
     padding-top: 2px;
+    position: absolute;
+    background-color: var(--secondary-background-color);
+    z-index: 100;
 }
 
 .suggestion-item {
