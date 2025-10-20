@@ -7,66 +7,80 @@
     <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
-    <!--
-        This is top level container.
-        Removing this container will remove the centred card look for the entire app
-    -->
     <div class="container">
         <h1>🚂 Verbose Train 🚂</h1>
         <p>All aboard! The Verbose Train is getting ready to depart.</p>
         <p>Just type in the start and end point of your trip, we will handle the rest!</p>
-        <!-- Input group for stations -->
-        <div class="input-group">
+        <div class="journey-planner">
             <div class="station-input left">
-                <label for="start-station">From:</label>
                 <input 
                     type="text" 
                     id="start-station" 
                     name="start-station" 
-                    placeholder="Enter starting station"
+                    placeholder="FROM"
                     aria-label="Starting station"
                     required
+                    title="Type at least 2 characters to search for station"
                 >
             </div>
-            <div class="arrow">⬇️</div>
+
+            <div class="arrow">
+                <button id="swap-btn">↔</button>
+            </div>
             
             <div class="station-input right">
-                <label for="end-station">To:</label>
                 <input 
                     type="text" 
                     id="end-station" 
                     name="end-station" 
-                    placeholder="Enter destination station"
+                    placeholder="TO"
                     aria-label="Destination station"
-                    //attibute from validation
                     required
+                    title="Type at least 2 characters to search for station"
                 >
             </div>
+            
+            <div>
+                <button id="search-journey" class="search-btn">🚂</button>
+            </div>
         </div>
-
-        <!-- Search button -->
-        <button id="search-journey" class="search-btn">Search Journey</button>
-
-        <!-- Results containers -->
-        <div class="display-box" id="tfl-display"></div>
-        <div class="display-box" id="open-ai-display"></div>
     </div>
     
-    <!-- <div class="container">
+    <div class="container" id="journey-result-container">
+        
         <canvas id="train-loader"></canvas>
-    </div> -->
+
+        <div id="journey-result-wrapper">
+
+            <div id="header-tpl-wrapper">
+                <template id="journey-header-tpl">
+                    <div class="joruney-header-wrapper">
+                        <h2 id="end-points-meta"></h2>
+                        <div class="stops-duration-lines-meta">
+                            <span id="stop-count"></span>&nbsp;stops
+                            &nbsp;•&nbsp;
+                            <span id="duration"></span>&nbsp;minutes
+                            &nbsp;•&nbsp;
+                            <span id="line"></span>&nbsp;Line
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <div id="card-tpl-wrapper">
+                <template id="info-card-tpl">
+                    <div class="info-card-wrapper">
+                        <div class="info-card-main">
+                            <h2 class="stop-name"></h2>
+                            <p class="line-name"></p>
+                            <div class="pts-of-interest-wrapper"></div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
     
-    <!-- <div class="container" id="ai-container">
-        <h2>OpenAI Interaction</h2>
-        <textarea id="prompt-input" rows="4" cols="50" placeholder="Enter your prompt here..."></textarea>
-        <textarea id="prompt-input" rows="4" cols="50" placeholder="Enter stops, separated by commas (e.g. Victoria, Euston, King's Cross)"></textarea>
-        <br>
-        <button id="submit-prompt">Get AI Response</button>
-        <div class="loader" id="loader"></div>
-        <div id="response-container"></div>
-    </div> -->
-    
-    <!-- <script type="module" src="/src/train-loader.js"></script> -->
     <script type="module" src="/src/script.js"></script>
 </body>
 </html>

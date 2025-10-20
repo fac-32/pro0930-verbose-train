@@ -1,9 +1,23 @@
-// import { startTrainAnimation } from './train-loader.js';
-// startTrainAnimation('train-loader');
+import { startTrainAnimation } from './train-loader.js';
+import { renderCardTemplate, renderJouenryHeaderTemplate } from './render-templates.js';
 
 // Get references to the station input elements
 const startInput = document.getElementById('start-station');
 const endInput = document.getElementById('end-station');
+
+function renderJourneyData (data) {
+    const elWrapper = document.getElementById('card-tpl-wrapper');
+    data.forEach(stop => {
+        const wrapperDiv = document.createElement('div');
+        elWrapper.appendChild(renderCardTemplate(wrapperDiv, stop));
+    })
+}
+
+function renderJourneyHeader (data) {
+    const elWrapper = document.getElementById('header-tpl-wrapper');
+    const wrapperDiv = document.createElement('div');
+    elWrapper.appendChild(renderJouenryHeaderTemplate(wrapperDiv, data));
+}
 
 document.getElementById('search-journey').addEventListener('click', async () => {
     // validation: check for input on both fields
@@ -13,48 +27,37 @@ document.getElementById('search-journey').addEventListener('click', async () => 
         alert('Please select both a start and end station from the dropdowns.');
         return;
     }
-    
-    try {
-        // clear input field
-        startInput.value = '';
-        endInput.value = '';
 
-        // remove existing journey result
-        const existingResults = document.getElementById('tfl-ul');
-        if (existingResults) existingResults.remove();
-        
+    // DOM clean up on click
+    // 1. clear input field
+    startInput.value = '';
+    endInput.value = '';
+    
+    // 2. loader animation
+    document.getElementById('journey-result-container').style.display = 'block';
+    document.getElementById('train-loader').style.display = 'block';
+    startTrainAnimation('train-loader');
+    
+    // 3. prevent duplicate/historic displays
+    const existingResults = document.getElementsByClassName('info-card-wrapper');
+    if (existingResults.length > 0) {
+        Array.from(existingResults).forEach(el => { el.remove(); })
+    }
+    const journeyMeta = document.querySelector('.joruney-header-wrapper');
+    if (journeyMeta) journeyMeta.remove();
+
+    try {
         fetch(`api/tfl/journey/${from}/to/${to}`)
         .then(response => response.json())
         .then(data => {
-            console.log('search-journey, then block, before data handling')
-            // console.log(data);
-            appendDisplayChild('tfl-display', 'tfl-ul', renderJourneyData(data));
-            // appendDisplayChild('open-ai-display', 'open-ai-p', response.openAiSuggestions);
+            renderJourneyData(data);
+            renderJourneyHeader(data);
+            document.getElementById('train-loader').style.display = 'none';
         })
-        // Once fetch is initiated, hide the intro placeholder
-        // this will get excuted befor the .then block
-        document.querySelector('.display-box').style.display = 'block';
-        // need to insert display for loader animation
     } catch (error) {
         console.log(error)
     }
 })
-
-function renderJourneyData(data) {
-    return data.map(station => station.commonName);
-}
-
-function appendDisplayChild (parentId, childId, journeyArray) {
-    const childWrapper = document.createElement('ul');
-    childWrapper.id = childId;
-    journeyArray.forEach(stop => {
-        const listItem = document.createElement('li');
-        listItem.textContent = stop;
-        childWrapper.appendChild(listItem);
-    })
-    const parentEl = document.getElementById(parentId);
-    parentEl.appendChild(childWrapper);
-}
 
 // Debounce function to prevent excessive API calls
 // This creates a delay between user typing and API call
@@ -79,19 +82,19 @@ async function handleFuzzySearch(inputElement, searchTerm) {
         return;
     }
     
-    try {
-        fetch(`/api/suggest-stations`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({searchTerm}),
-        })
-        .then(response => response.json())
-        .then(data => {
-            showSuggestions(inputElement, data.suggestions);
-        })
-    } catch (error) {
-        console.error('Fuzzy search error:', error);
-    }
+    fetch(`/api/suggest-stations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({searchTerm}),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.suggestions.length === 0) {
+            createNotiBox(inputElement, 'user-typo', "We couldn't find anything. Did you make a typo?");
+            return
+        }
+        showSuggestions(inputElement, data.suggestions);
+    })
 }
 
 function trimCommonName(name) {
@@ -136,6 +139,21 @@ function showSuggestions(inputElement, suggestions) {
     inputElement.parentElement.appendChild(dropdown);
 }
 
+function swapInput () {
+    const valueHolder = {
+        value: startInput.value,
+        searchableName: startInput.dataset.searchableName
+    };
+
+    startInput.value = endInput.value;
+    startInput.dataset.searchableName = endInput.dataset.searchableName;
+
+    endInput.value = valueHolder.value;
+    endInput.dataset.searchableName = valueHolder.searchableName;
+}
+
+document.getElementById('swap-btn').addEventListener('click', swapInput);
+
 // Create debounced version of search function
 const debouncedSearch = debounce(handleFuzzySearch, 1000); // 1 second delay
 
@@ -144,20 +162,22 @@ function sanitizeInput(input) {
     return validInput.test(input);
 }
 
-function createInvalidCharNotiBox(parentEl){
+function createNotiBox(parentEl, selfId, msgText){
     // prevent multiple boxes
-    if (document.getElementById('invalid-char-notification')) return;
+    if (document.getElementById(selfId)) return;
 
     const message = document.createElement('div');
-    message.id = 'invalid-char-notification';
-    message.textContent = 'Please only input alphabets, spaces, or dashes.';
+    message.className = 'custom-pop-up-message';
+    message.id = selfId;
+    message.textContent = msgText;
     parentEl.insertAdjacentElement('afterend', message);
 
     // auto remove after 1.5 seconds
     setTimeout(() => {
-        document.getElementById('invalid-char-notification').remove();
+        document.getElementById(selfId).remove();
     }, 1500)
 }
+
 // Add input event listeners to both station inputs
 [startInput, endInput].forEach(input => {
     input.addEventListener('input', (e) => {
@@ -165,95 +185,17 @@ function createInvalidCharNotiBox(parentEl){
         // remove any invalid characters by replacing them with empty string
         if (!sanitizeInput(e.target.value)) {
             e.target.value = e.target.value.replace(/[^A-Za-z\s-]/g, '');
-            createInvalidCharNotiBox(e.target);
+            createNotiBox(e.target, 'invalid-char-notification', 'Please only input characters, space, or dash.');
         }
 
         const searchTerm = e.target.value.trim();
         debouncedSearch(e.target, searchTerm);
     });
+    input.addEventListener('focusout', () => {
+        setTimeout(() => {
+            const existingDropdown = document.querySelector('.suggestions-dropdown');
+            if (existingDropdown) existingDropdown.remove();
+        }, 100)
+    })
 });
 
-
-// document.addEventListener('DOMContentLoaded', () => {
-//   const promptInput = document.getElementById('prompt-input');
-//   const submitButton = document.getElementById('submit-prompt');
-//   const responseContainer = document.getElementById('response-container');
-//   const loader = document.getElementById('loader');
-
-//   submitButton.addEventListener('click', async () => {
-//     const prompt = promptInput.value;
-//     if (!prompt) {
-//       alert('Please enter a prompt.');
-//       return;
-//     }
-
-//     loader.style.display = 'block';
-//     responseContainer.innerHTML = '';
-
-//     try {
-//       const response = await fetch('/api/openai', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ prompt }),
-//       });
-
-//       if (!response.ok) {
-//         throw new Error('Failed to get response from the server.');
-//       }
-
-//       const data = await response.json();
-//       const message = data.message.content;
-//       responseContainer.textContent = message;
-//       responseContainer.style.color = 'black';
-//     } catch (error) {
-//       responseContainer.textContent = error.message;
-//       responseContainer.style.color = 'red';
-//     } finally {
-//       loader.style.display = 'none';
-//     }
-//   });
-// });
-
-// document.addEventListener('DOMContentLoaded', () => {
-//   const stopsInput = document.getElementById('prompt-input');
-//   const submitButton = document.getElementById('submit-prompt');
-//   const responseContainer = document.getElementById('response-container');
-//   const loader = document.getElementById('loader');
-
-//   submitButton.addEventListener('click', async () => {
-//     const stopsRaw = stopsInput.value;
-//     if (!stopsRaw.trim()) {
-//       alert('Please enter one or more stops separated by commas.');
-//       return;
-//     }
-
-//     // Convert the textarea value to a clean array of stops
-//     const stops = stopsRaw.split(',')
-//       .map(stop => stop.trim())
-//       .filter(Boolean);
-
-//     loader.style.display = 'block';
-//     responseContainer.innerHTML = '';
-
-//     try {
-//       const response = await fetch('/api/openai', {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ stops }),
-//       });
-
-//       if (!response.ok) {
-//         throw new Error('Failed to get response from the server.');
-//       }
-
-//       const data = await response.json();
-//       responseContainer.innerHTML = `<p>${data.suggestions}</p>`;
-//     } catch (error) {
-//       responseContainer.innerHTML = `<p style="color: red;">${error.message}</p>`;
-//     } finally {
-//       loader.style.display = 'none';
-//     }
-//   });
-// });
