@@ -152,9 +152,17 @@ const openAIResponse = await getJourneyRecommendations(assembledJourney);
 console.log('Raw OpenAI response length:', openAIResponse.length);
 console.log('Raw OpenAI response:', openAIResponse);
 console.log('OpenAI response received, assembledJourney length after:', assembledJourney.length);
-console.log(openAIResponse)
 
-res.json(assembledJourney);
+
+try {
+  const enhancedJourney = JSON.parse(openAIResponse);
+  console.log('Successfully parsed OpenAI response, sending enhanced journey with', enhancedJourney.length, 'stations');
+  res.json(enhancedJourney);
+} catch (parseError) {
+  console.error('Failed to parse OpenAI response as JSON:', parseError);
+  console.log('Falling back to original journey data');
+  res.json(assembledJourney);
+}
   } catch (error) {
     res.status(500).json({ message: 'Error fetching journey', error: error.message });
   }
