@@ -72,9 +72,9 @@ export function renderJouenryHeaderTemplate(rootElement, data) {
     clone.getElementById('stop-count').textContent = stopCount;
     
     // const duration = timeDiffInMin(start.arrivalTime, end.arrivalTime)
-    const dummyStart = "15:00";
-    const dummyEnd = "16:00";
-    const duration = timeDiffInMin(dummyStart, dummyEnd)
+    // const dummyStart = "15:00";
+    // const dummyEnd = "16:00";
+    const duration = timeDiffInMin(start.arrivalTime, end.arrivalTime);
     clone.getElementById('duration').textContent = duration;
 
     const lineCount = new Set(data.map(stop => stop.line));

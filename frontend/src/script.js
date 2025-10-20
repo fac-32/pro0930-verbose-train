@@ -49,21 +49,29 @@ document.getElementById('search-journey').addEventListener('click', async () => 
     if (journeyMeta) journeyMeta.remove();
 
     // dummy replication of real fetch and data processing
-    renderJourneyData(DUMMY);
-    renderJourneyHeader(DUMMY);
-    document.getElementById('train-loader').style.display = 'none';
+    // renderJourneyData(DUMMY);
+    // renderJourneyHeader(DUMMY);
+    // document.getElementById('train-loader').style.display = 'none';
 
-    // try {
-    //     fetch(`api/tfl/journey/${from}/to/${to}`)
+    // dummy to verify response data
+    // fetch(`api/tfl/journey/940GZZLUVIC/to/940GZZLUOXC`)
     //     .then(response => response.json())
     //     .then(data => {
-    //         renderJourneyData(data);
-    //         renderJourneyHeader(data);
-    //         document.getElementById('train-loader').style.display = 'none';
+    //         console.log(data);
     //     })
-    // } catch (error) {
-    //     console.log(error)
-    // }
+
+    try {
+        fetch(`api/tfl/journey/${from}/to/${to}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data[0]);
+            renderJourneyData(data);
+            renderJourneyHeader(data);
+            document.getElementById('train-loader').style.display = 'none';
+        })
+    } catch (error) {
+        console.log(error)
+    }
 })
 
 // Debounce function to prevent excessive API calls
