@@ -195,7 +195,7 @@ function createNotiBox(parentEl, selfId, msgText){
         setTimeout(() => {
             const existingDropdown = document.querySelector('.suggestions-dropdown');
             if (existingDropdown) existingDropdown.remove();
-        }, 100)
+        }, 300)
     })
 });
 
