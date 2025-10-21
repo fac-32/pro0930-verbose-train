@@ -13,13 +13,15 @@ const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 const time = new Date().toTimeString().slice(0, 5).replace(':', '');
 const type = 'stationSelect';
 
-const stationInfoBundler = (commonName, naptanId, lat, lon, arrivalTime) => {
+const stationInfoBundler = (commonName, naptanId, lat, lon, arrivalTime, lineName, lineID) => {
   return {
     commonName: commonName,
     lat: lat,
     lon: lon,
     naptanId: naptanId,
-    arrivalTime: arrivalTime || null
+    arrivalTime: arrivalTime || null,
+    lineName: lineName || null,
+    lineID: lineID || null
   }
 }
 
@@ -33,7 +35,8 @@ const getJourney = async (req, res) => {
     let data = await tflservice.TFLAPICall(from, to, time, date, type);
     data = data.data
     console.log('success ftl journey fetch');
-    console.log(data);
+    console.log('Lines used in journey:', data.lines);
+    console.log('Full journey data:', data);
     
 
     const allStops = [];
@@ -44,15 +47,30 @@ const getJourney = async (req, res) => {
     
     data.journeys[0].legs.forEach( (journeyLeg) => {
       console.log('Processing leg:', numberOfLegs, journeyLeg.departurePoint?.commonName, 'to', journeyLeg.arrivalPoint?.commonName);
+      console.log('Leg instruction summary:', journeyLeg.instruction?.summary);
+      console.log('Leg routeOptions:', journeyLeg.routeOptions?.[0]);
+      console.log('Leg mode:', journeyLeg.mode);
       
+      
+
       if (!combinedLegs.departurePoint) {
+        
         combinedLegs.departurePoint = journeyLeg.departurePoint
+        combinedLegs.departurePoint.lineName = journeyLeg.routeOptions[0].lineIdentifier.name
+        combinedLegs.departurePoint.lineID = journeyLeg.routeOptions[0].lineIdentifier.id
+
       } 
 
       if (!combinedLegs.path) {
         combinedLegs.path = journeyLeg.path;
+        for (let stopPoint of combinedLegs.path.stopPoints) {
+    stopPoint.lineName = journeyLeg.routeOptions[0].lineIdentifier.name
+    stopPoint.lineID = journeyLeg.routeOptions[0].lineIdentifier.id
+  }
       } else if (combinedLegs.path) {
         for (let stopPoint of journeyLeg.path.stopPoints) {
+          stopPoint.lineName = journeyLeg.routeOptions[0].lineIdentifier.name
+          stopPoint.lineID = journeyLeg.routeOptions[0].lineIdentifier.id
         combinedLegs.path.stopPoints.push(stopPoint)
         }
       }
@@ -64,6 +82,9 @@ const getJourney = async (req, res) => {
       combinedLegs.arrivalTime = journeyLeg.arrivalTime;
 
       combinedLegs.arrivalPoint = journeyLeg.arrivalPoint;
+      combinedLegs.arrivalPoint.lineName = journeyLeg.routeOptions[0].lineIdentifier.name
+      combinedLegs.arrivalPoint.lineID = journeyLeg.routeOptions[0].lineIdentifier.id
+
 
       numberOfLegs++;
     }
@@ -109,6 +130,8 @@ for (const station of allStops) {
   let lat;
   let lon;
   let arrivalTime;
+  let lineName;
+  let lineID;
 
   console.log('Processing station:', station.commonName || station.name, 'ID:', station.id || station.naptanId);
   
@@ -117,6 +140,9 @@ for (const station of allStops) {
     commonName = station.commonName || station.name;
    
     naptanId = station.id || station.naptanId;
+
+    lineName = station.lineName;
+    lineID = station.lineID;
 
    
     if (station.arrivalDateTime) {
@@ -138,7 +164,8 @@ for (const station of allStops) {
     }
     
     console.log('Adding station to journey:', commonName);
-    assembledJourney.push(stationInfoBundler(commonName, naptanId, lat, lon, arrivalTime));
+    
+    assembledJourney.push(stationInfoBundler(commonName, naptanId, lat, lon, arrivalTime, lineName, lineID));
   } else {
     console.log('Skipped station (missing data):', station.commonName || station.name || 'unnamed');
   }
