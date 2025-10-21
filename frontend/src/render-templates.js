@@ -8,31 +8,32 @@ export function renderCardTemplate(rootElement, data) {
     // deep copy of template clone with all child elements inside template
     const clone = tpl.content.cloneNode(true);
     
-    const DUMMY_LINE = randomLine();
-
     const cardMain = clone.querySelector('.info-card-main');
-    cardMain.style.borderLeft = `8px solid var(--${DUMMY_LINE})`;
+    cardMain.style.borderLeft = `8px solid var(--${data.lineID})`;
 
     const stopName = clone.querySelector('.stop-name');
     stopName.textContent = trimCommonName(data.commonName);
     
     const lineName = clone.querySelector('.line-name');
-    lineName.textContent = `${DUMMY_LINE} line`;
-    lineName.style.backgroundColor = `var(--${DUMMY_LINE})`;
-    lineName.style.color = `var(--${DUMMY_LINE}-text)`;
+    lineName.textContent = `${data.lineName} line`;
+    lineName.style.backgroundColor = `var(--${data.lineID})`;
+    lineName.style.color = `var(--${data.lineID}-text)`;
 
     const p14tWrapper = clone.querySelector('.pts-of-interest-wrapper')
-    data.placeOfInterest.forEach(point => {
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'point-of-interest-card';
-        const h4 = document.createElement('h4');
-        h4.textContent = point.name;
-        cardDiv.appendChild(h4);
-        const p = document.createElement('p');
-        p.textContent = point.description;
-        cardDiv.appendChild(p);
-        p14tWrapper.appendChild(cardDiv);
-    })
+    const placeData = data.placeOfInterest;
+    if (placeData.length > 0) {
+        placeData.forEach(point => {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'point-of-interest-card';
+            const h4 = document.createElement('h4');
+            h4.textContent = point.name;
+            cardDiv.appendChild(h4);
+            const p = document.createElement('p');
+            p.textContent = point.description;
+            cardDiv.appendChild(p);
+            p14tWrapper.appendChild(cardDiv);
+        })
+    }
 
     frag.appendChild(clone);
     rootElement.appendChild(frag);
@@ -62,7 +63,7 @@ export function renderJouenryHeaderTemplate(rootElement, data) {
     const duration = timeDiffInMin(start.arrivalTime, end.arrivalTime);
     clone.getElementById('duration').textContent = duration;
 
-    const lineCount = new Set(data.map(stop => stop.line));
+    const lineCount = new Set(data.map(stop => stop.lineName));
     if (lineCount.length === 1) {
         clone.getElementById('line').textContent = lineCount[0];
     } else {
@@ -92,12 +93,4 @@ function trimCommonName(name) {
         return name.slice(0, -phrase.length);
     }
     return name;
-}
-
-function randomLine() {
-    // this is dummy function to choose a random tube line colour
-    // all names in array are real line ids from TFL
-    const allLines = ['bakerloo', 'central', 'circle', 'district', 'hammersmith-city', 'jubilee', 'metropolitan', 'northern', 'piccadilly', 'victoria', 'waterloo-city'];
-    const i = Math.floor(Math.random() * (allLines.length));
-    return allLines[i];
 }
