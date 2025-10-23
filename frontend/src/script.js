@@ -1,13 +1,25 @@
 import { startTrainAnimation } from './train-loader.js';
-startTrainAnimation('train-loader');
+import { renderCardTemplate, renderJouenryHeaderTemplate } from './render-templates.js';
 
 // Get references to the station input elements
 const startInput = document.getElementById('start-station');
 const endInput = document.getElementById('end-station');
 
-document.getElementById('search-journey').addEventListener('click', async () => {
-    console.log('button clicked');
+function renderJourneyData (data) {
+    const elWrapper = document.getElementById('card-tpl-wrapper');
+    data.forEach(stop => {
+        const wrapperDiv = document.createElement('div');
+        elWrapper.appendChild(renderCardTemplate(wrapperDiv, stop));
+    })
+}
 
+function renderJourneyHeader (data) {
+    const elWrapper = document.getElementById('header-tpl-wrapper');
+    const wrapperDiv = document.createElement('div');
+    elWrapper.appendChild(renderJouenryHeaderTemplate(wrapperDiv, data));
+}
+
+document.getElementById('search-journey').addEventListener('click', async () => {
     // validation: check for input on both fields
     const from = startInput.dataset.searchableName;
     const to = endInput.dataset.searchableName;
@@ -15,33 +27,37 @@ document.getElementById('search-journey').addEventListener('click', async () => 
         alert('Please select both a start and end station from the dropdowns.');
         return;
     }
+
+    // DOM clean up on click
+    // 1. clear input field
+    startInput.value = '';
+    endInput.value = '';
     
-    const tubeFrame = document.getElementById('tube-frame');
-    tubeFrame.style.display = 'block';
+    // 2. loader animation
+    document.getElementById('journey-result-container').style.display = 'block';
+    document.getElementById('train-loader').style.display = 'block';
+    startTrainAnimation('train-loader');
+    
+    // 3. prevent duplicate/historic displays
+    const existingResults = document.getElementsByClassName('info-card-wrapper');
+    if (existingResults.length > 0) {
+        Array.from(existingResults).forEach(el => { el.remove(); })
+    }
+    const journeyMeta = document.querySelector('.joruney-header-wrapper');
+    if (journeyMeta) journeyMeta.remove();
 
-    const message = {
-        type: 'journeySearch',
-        from: from,
-        to: to
-    };
-
-    tubeFrame.contentWindow.postMessage(message, '*');
+    try {
+        fetch(`api/tfl/journey/${from}/to/${to}`)
+        .then(response => response.json())
+        .then(data => {
+            renderJourneyData(data);
+            renderJourneyHeader(data);
+            document.getElementById('train-loader').style.display = 'none';
+        })
+    } catch (error) {
+        console.log(error)
+    }
 });
-
-function renderJourneyData(data) {
-    // keep for reference
-    // return data.map(station => `<p>${station.commonName} (${station.naptanId}) - Lat: ${station.lat}, Lon: ${station.lon}</p>`).join('');
-    return data.map(station => station.commonName);
-}
-
-function appendDisplayChild (parentId, childId, textContent) {
-    const childP = document.createElement('p');
-    childP.id = childId;
-    childP.textContent = textContent;
-    const parentEl = document.getElementById(parentId);
-    parentEl.style.display = 'block';
-    parentEl.appendChild(childP);
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     const chatWindow = document.getElementById('chat-window');
@@ -50,65 +66,68 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatbotToggleButton = document.getElementById('chatbot-toggle-button');
     const chatbotContainer = document.querySelector('.tube-chatbot-container');
 
-    const chatIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>';
-    const closeIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+    if (chatbotToggleButton) {
+        const chatIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>';
+        const closeIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
 
-    chatbotToggleButton.innerHTML = chatIcon;
+        chatbotToggleButton.innerHTML = chatIcon;
 
-    chatbotToggleButton.addEventListener('click', () => {
-        const isVisible = chatbotContainer.classList.toggle('visible');
-        chatbotToggleButton.innerHTML = isVisible ? closeIcon : chatIcon;
-    });
-
-    const appendMessage = (sender, text) => {
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('message', `${sender}-message`);
-        messageElement.innerText = text;
-        chatWindow.appendChild(messageElement);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-        return messageElement;
+        chatbotToggleButton.addEventListener('click', () => {
+            const isVisible = chatbotContainer.classList.toggle('visible');
+            chatbotToggleButton.innerHTML = isVisible ? closeIcon : chatIcon;
+        });
     }
 
-    chatForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const messageText = userInput.value.trim();
-        if (messageText === '') return;
-
-        appendMessage('user', messageText);
-        userInput.value = '';
-
-        const thinkingMessage = appendMessage('bot', '');
-        thinkingMessage.classList.add('thinking');
-        thinkingMessage.innerHTML = '<span>.</span><span>.</span><span>.</span>';
-
-        try {
-            const response = await fetch('/api/chatbot', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ prompt: messageText }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to get response from the server.');
-            }
-
-            const data = await response.json();
-            const botResponse = data.message.content;
-
-            thinkingMessage.classList.remove('thinking');
-            thinkingMessage.innerText = botResponse;
+    if (chatForm) {
+        const appendMessage = (sender, text) => {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', `${sender}-message`);
+            messageElement.innerText = text;
+            chatWindow.appendChild(messageElement);
             chatWindow.scrollTop = chatWindow.scrollHeight;
-
-        } catch (error) {
-            thinkingMessage.classList.remove('thinking');
-            thinkingMessage.innerText = 'Sorry, something went wrong. Please try again.';
-            thinkingMessage.style.color = 'red';
+            return messageElement;
         }
-    });
-});
 
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageText = userInput.value.trim();
+            if (messageText === '') return;
+
+            appendMessage('user', messageText);
+            userInput.value = '';
+
+            const thinkingMessage = appendMessage('bot', '');
+            thinkingMessage.classList.add('thinking');
+            thinkingMessage.innerHTML = '<span>.</span><span>.</span><span>.</span>';
+
+            try {
+                const response = await fetch('/api/chatbot', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: messageText }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to get response from the server.');
+                }
+
+                const data = await response.json();
+                const botResponse = data.message.content;
+
+                thinkingMessage.classList.remove('thinking');
+                thinkingMessage.innerText = botResponse;
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            } catch (error) {
+                thinkingMessage.classList.remove('thinking');
+                thinkingMessage.innerText = 'Sorry, something went wrong. Please try again.';
+                thinkingMessage.style.color = 'red';
+            }
+        });
+    }
+});
 
 // Debounce function to prevent excessive API calls
 // This creates a delay between user typing and API call
@@ -133,22 +152,19 @@ async function handleFuzzySearch(inputElement, searchTerm) {
         return;
     }
     
-    try {
-        fetch(`/api/suggest-stations`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({searchTerm}),
-
-        })
-        .then(response => response.json())
-        .then(data => {
-            // console.log('handle fuzzy search, then block, before data handling')
-            // console.log(data.suggestions);
-            showSuggestions(inputElement, data.suggestions);
-        })
-    } catch (error) {
-        console.error('Fuzzy search error:', error);
-    }
+    fetch(`/api/suggest-stations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({searchTerm}),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.suggestions.length === 0) {
+            createNotiBox(inputElement, 'user-typo', "We couldn't find anything. Did you make a typo?");
+            return
+        }
+        showSuggestions(inputElement, data.suggestions);
+    })
 }
 
 function trimCommonName(name) {
@@ -161,7 +177,6 @@ function trimCommonName(name) {
 
 // Function to display suggestion dropdown
 function showSuggestions(inputElement, suggestions) {
-    console.log('show suggestions function');
     // Remove existing dropdown if any
     const existingDropdown = inputElement.parentElement.querySelector('.suggestions-dropdown');
     if (existingDropdown) existingDropdown.remove();
@@ -179,7 +194,7 @@ function showSuggestions(inputElement, suggestions) {
         suggestion.dataset.searchableName = station.icsId;
         
         // Handle click on suggestion
-        suggestion.addEventListener('click', () => {
+        suggestion.addEventListener('mousedown', () => {
             inputElement.value = trimCommonName(station.name);
             // Store icsId under dataset attribute and used for journey search
             // trimming down display name shouldn't affect the actual search
@@ -194,6 +209,21 @@ function showSuggestions(inputElement, suggestions) {
     inputElement.parentElement.appendChild(dropdown);
 }
 
+function swapInput () {
+    const valueHolder = {
+        value: startInput.value,
+        searchableName: startInput.dataset.searchableName
+    };
+
+    startInput.value = endInput.value;
+    startInput.dataset.searchableName = endInput.dataset.searchableName;
+
+    endInput.value = valueHolder.value;
+    endInput.dataset.searchableName = valueHolder.searchableName;
+}
+
+document.getElementById('swap-btn').addEventListener('click', swapInput);
+
 // Create debounced version of search function
 const debouncedSearch = debounce(handleFuzzySearch, 1000); // 1 second delay
 
@@ -202,20 +232,22 @@ function sanitizeInput(input) {
     return validInput.test(input);
 }
 
-function createInvalidCharNotiBox(parentEl){
+function createNotiBox(parentEl, selfId, msgText){
     // prevent multiple boxes
-    if (document.getElementById('invalid-char-notification')) return;
+    if (document.getElementById(selfId)) return;
 
     const message = document.createElement('div');
-    message.id = 'invalid-char-notification';
-    message.textContent = 'Please only input alphabets, spaces, or dashes.';
+    message.className = 'custom-pop-up-message';
+    message.id = selfId;
+    message.textContent = msgText;
     parentEl.insertAdjacentElement('afterend', message);
 
     // auto remove after 1.5 seconds
     setTimeout(() => {
-        document.getElementById('invalid-char-notification').remove();
+        document.getElementById(selfId).remove();
     }, 1500)
 }
+
 // Add input event listeners to both station inputs
 [startInput, endInput].forEach(input => {
     input.addEventListener('input', (e) => {
@@ -223,52 +255,16 @@ function createInvalidCharNotiBox(parentEl){
         // remove any invalid characters by replacing them with empty string
         if (!sanitizeInput(e.target.value)) {
             e.target.value = e.target.value.replace(/[^A-Za-z\s-]/g, '');
-            createInvalidCharNotiBox(e.target);
+            createNotiBox(e.target, 'invalid-char-notification', 'Please only input characters, space, or dash.');
         }
 
         const searchTerm = e.target.value.trim();
         debouncedSearch(e.target, searchTerm);
     });
+    input.addEventListener('focusout', () => {
+        setTimeout(() => {
+            const existingDropdown = document.querySelector('.suggestions-dropdown');
+            if (existingDropdown) existingDropdown.remove();
+        }, 100)
+    })
 });
-
-// document.addEventListener('DOMContentLoaded', () => {
-//   const stopsInput = document.getElementById('prompt-input');
-//   const submitButton = document.getElementById('submit-prompt');
-//   const responseContainer = document.getElementById('response-container');
-//   const loader = document.getElementById('loader');
-
-//   submitButton.addEventListener('click', async () => {
-//     const stopsRaw = stopsInput.value;
-//     if (!stopsRaw.trim()) {
-//       alert('Please enter one or more stops separated by commas.');
-//       return;
-//     }
-
-//     // Convert the textarea value to a clean array of stops
-//     const stops = stopsRaw.split(',')
-//       .map(stop => stop.trim())
-//       .filter(Boolean);
-
-//     loader.style.display = 'block';
-//     responseContainer.innerHTML = '';
-
-//     try {
-//       const response = await fetch('/api/openai', {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ stops }),
-//       });
-
-//       if (!response.ok) {
-//         throw new Error('Failed to get response from the server.');
-//       }
-
-//       const data = await response.json();
-//       responseContainer.innerHTML = `<p>${data.suggestions}</p>`;
-//     } catch (error) {
-//       responseContainer.innerHTML = `<p style="color: red;">${error.message}</p>`;
-//     } finally {
-//       loader.style.display = 'none';
-//     }
-//   });
-// });

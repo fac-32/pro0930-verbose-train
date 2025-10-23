@@ -1,7 +1,7 @@
 // trainAnimation.js
 
 export function startTrainAnimation(canvasId) {
-        console.log('Starting train animation on canvas:', canvasId);
+    console.log('Starting train animation on canvas:', canvasId);
     const canvas = document.getElementById(canvasId);
     if (!canvas) {
         console.error(`Canvas with id "${canvasId}" not found.`);
@@ -57,7 +57,7 @@ export function startTrainAnimation(canvasId) {
         });
         }
 
-        trainX -= canvas.width * 0.004; // speed scales with canvas size
+        trainX -= canvas.width * 0.01; // speed scales with canvas size
 
         // Reset train when off-screen
         if (trainX < -60) {

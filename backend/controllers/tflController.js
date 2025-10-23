@@ -1,21 +1,26 @@
 console.log('Loading: controllers/tflController.js');
 import * as tflservice from '../services/tflservice.js';
 import googleMapsService from '../services/googleMapsService.js';
-import openai from '../lib/OpenAIClient.js';
+import OpenAI from 'openai';
+import { getJourneyRecommendations } from './openAIController.js';
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 //justin code
-const date = 20251016
-// const from = 1000129
-// const to = 1000013
-const time = '1700'
+const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+const time = new Date().toTimeString().slice(0, 5).replace(':', '');
 const type = 'stationSelect';
 
-const stationInfoBundler = (commonName, naptanId, lat, lon) => {
+const stationInfoBundler = (commonName, naptanId, lat, lon, arrivalTime, line) => {
   return {
     commonName: commonName,
     lat: lat,
     lon: lon,
-    naptanId: naptanId
+    naptanId: naptanId,
+    arrivalTime: arrivalTime || null,
+    line: line || null
   }
 }
 
@@ -29,36 +34,111 @@ const getJourney = async (req, res) => {
     let data = await tflservice.TFLAPICall(from, to, time, date, type);
     data = data.data
     console.log('success ftl journey fetch');
-    console.log(data);
-    
+
+    const stationIdToLine = {};
+    if (data.journeys && data.journeys.length > 0) {
+      data.journeys[0].legs.forEach(leg => {
+        const lineName = leg.routeOptions[0].name;
+        leg.path.stopPoints.forEach(stop => {
+          stationIdToLine[stop.id] = lineName;
+        });
+        if (leg.departurePoint) {
+          stationIdToLine[leg.departurePoint.naptanId] = lineName;
+        }
+        if (leg.arrivalPoint) {
+          stationIdToLine[leg.arrivalPoint.naptanId] = lineName;
+        }
+      });
+    }
 
     const allStops = [];
+    let numberOfLegs = 0;
+    let combinedLegs = {};
 
-    const leg = data.journeys[0].legs[0];
-    const departurePoint = leg.departurePoint;
+    console.log('About to process legs, number of legs:', data.journeys[0].legs.length);
+    
+    data.journeys[0].legs.forEach( (journeyLeg) => {
+      console.log('Processing leg:', numberOfLegs, journeyLeg.departurePoint?.commonName, 'to', journeyLeg.arrivalPoint?.commonName);
+      
+      if (!combinedLegs.departurePoint) {
+        combinedLegs.departurePoint = journeyLeg.departurePoint
+      } 
+
+      if (!combinedLegs.path) {
+        combinedLegs.path = journeyLeg.path;
+      } else if (combinedLegs.path) {
+        for (let stopPoint of journeyLeg.path.stopPoints) {
+        combinedLegs.path.stopPoints.push(stopPoint)
+        }
+      }
+
+      if (!combinedLegs.departureTime) {
+        combinedLegs.departureTime = journeyLeg.departureTime;
+      }
+
+      combinedLegs.arrivalTime = journeyLeg.arrivalTime;
+
+      combinedLegs.arrivalPoint = journeyLeg.arrivalPoint;
+
+      numberOfLegs++;
+    }
+
+    )
+
+    const stationIDs = [];
+
+  combinedLegs.path.stopPoints = combinedLegs.path.stopPoints.filter((station) => {
+  
+  if (stationIDs.includes(station.id)) {
+    
+    return false;
+  } else {
+    
+    stationIDs.push(station.id);
+    return true;
+  }
+});
+
+    const departurePoint = combinedLegs.departurePoint
+    
+    departurePoint.timeInfo = combinedLegs.departureTime;
     allStops.push(departurePoint)
 
-    const intermediateStops = leg.path.stopPoints;
+    const intermediateStops = combinedLegs.path.stopPoints;
     intermediateStops.pop()
     intermediateStops.forEach((stops) => allStops.push(stops)
     )
-    const arrivalPoint = leg.arrivalPoint;
+    const arrivalPoint = combinedLegs.arrivalPoint;
+   
+    arrivalPoint.timeInfo = combinedLegs.arrivalTime;
     allStops.push(arrivalPoint);
 
     const assembledJourney = [];
 
+console.log('Total stops found:', allStops.length);
+console.log('All stops:', allStops.map(s => s.commonName || s.name));
 
 for (const station of allStops) {
   let commonName;
   let naptanId;
   let lat;
   let lon;
+  let arrivalTime;
 
+  console.log('Processing station:', station.commonName || station.name, 'ID:', station.id || station.naptanId);
+  
   if (station.commonName && station.id || station.commonName && station.naptanId || station.name && station.id) {
    
     commonName = station.commonName || station.name;
    
     naptanId = station.id || station.naptanId;
+
+   
+    if (station.arrivalDateTime) {
+      arrivalTime = station.arrivalDateTime.split('T')[1].slice(0, 5);
+    } else if (station.timeInfo) {
+      arrivalTime = station.timeInfo.split('T')[1].slice(0, 5);
+    }
     
     if (station.lat && station.lon) {
       lat = station.lat;
@@ -72,11 +152,39 @@ for (const station of allStops) {
       lon = fetchedStationLocation.lon;
     }
     
-    assembledJourney.push(stationInfoBundler(commonName, naptanId, lat, lon));
+    const line = stationIdToLine[naptanId];
+    console.log('Adding station to journey:', commonName);
+    assembledJourney.push(stationInfoBundler(commonName, naptanId, lat, lon, arrivalTime, line));
+  } else {
+    console.log('Skipped station (missing data):', station.commonName || station.name || 'unnamed');
   }
 }  
 
-res.json(assembledJourney);
+console.log('Final assembledJourney length before OpenAI:', assembledJourney.length);
+console.log('Array being sent to OpenAI:', JSON.stringify(assembledJourney, null, 2));
+
+const openAIResponse = await getJourneyRecommendations(assembledJourney);
+
+console.log('Raw OpenAI response length:', openAIResponse.length);
+console.log('Raw OpenAI response:', openAIResponse);
+console.log('OpenAI response received, assembledJourney length after:', assembledJourney.length);
+
+let cleanedResponse = openAIResponse.trim();
+if (cleanedResponse.startsWith('```json')) {
+    cleanedResponse = cleanedResponse.substring(7, cleanedResponse.length - 3);
+} else if (cleanedResponse.startsWith('```')) {
+    cleanedResponse = cleanedResponse.substring(3, cleanedResponse.length - 3);
+}
+
+try {
+  const enhancedJourney = JSON.parse(cleanedResponse);
+  console.log('Successfully parsed OpenAI response, sending enhanced journey with', enhancedJourney.length, 'stations');
+  res.json(enhancedJourney);
+} catch (parseError) {
+  console.error('Failed to parse OpenAI response as JSON:', parseError);
+  console.log('Falling back to original journey data');
+  res.json(assembledJourney);
+}
   } catch (error) {
     res.status(500).json({ message: 'Error fetching journey', error: error.message });
   }
@@ -85,6 +193,7 @@ res.json(assembledJourney);
 
 const getStations = async (req, res) => {
   try {
+    const { from, to } = req.query;
     const data = await tflservice.TFLAPICall(from, to, time, date, type);
     res.json(data);
   } catch (error) {
@@ -166,9 +275,9 @@ const getJourneyWithAI = async (req, res) => {
 //--------------------------------------
 
 const suggestStations = async (req, res) => {
-  const stationName = req.body; // Reads "user station's name input" from the request body
+  const { searchTerm } = req.body; // Reads "user station's name input" from the request body
   try {
-    const suggestions = await tflservice.getStationSuggestions(stationName, false); // flag to set to false for real API
+    const suggestions = await tflservice.getStationSuggestions(searchTerm, false); // flag to set to false for real API
     res.json({ suggestions }); // Sends suggestions back to the client
   } catch (error) {
     res.status(500).json({ message: 'Error fetching station suggestions', error: error.message });
@@ -180,7 +289,7 @@ const suggestStations = async (req, res) => {
 export {
   getStations,//justin code
   getJourney,//justin code
-  getJourneyWithAI,//tania code
-  suggestStations, // added export for suggestStations
+ getJourneyWithAI,//tania code
+ suggestStations, // added export for suggestStations
 };
 
